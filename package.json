@@ -1,0 +1,14 @@
+{
+  "name": "ungrammar-language-features",
+  "description": "Language Features for Ungrammar",
+  "private": true,
+  "author": "Binh Tran <binhtran432k@gmail.com>",
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
