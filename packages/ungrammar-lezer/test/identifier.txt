@@ -1,0 +1,15 @@
+# Simple ident
+
+Foo = Bar
+
+==>
+
+Grammar(Node(Identifier,Rule(Identifier)))
+
+# Invalid ident
+
+Foo = @Bar
+
+==>
+
+Grammar(Node(Identifier,@error,Rule(Identifier)))

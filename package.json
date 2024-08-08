@@ -1,14 +1,20 @@
 {
-  "name": "ungrammar-language-features",
-  "description": "Language Features for Ungrammar",
-  "private": true,
-  "author": "Binh Tran <binhtran432k@gmail.com>",
-  "license": "MIT",
-  "type": "module",
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  }
+	"name": "ungrammar-language-features",
+	"description": "Language Features for Ungrammar",
+	"private": true,
+	"author": "Binh Tran <binhtran432k@gmail.com>",
+	"license": "MIT",
+	"type": "module",
+	"scripts": {
+		"ci": "biome ci",
+		"fix": "biome check --fix --unsafe"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.8.3",
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	},
+	"workspaces": ["packages/*"]
 }

@@ -1,0 +1,73 @@
+@precedence { seq @left, label }
+
+@top Grammar { Node* }
+
+Node {
+  Identifier
+  "="
+  Rule { atomOrSeqOrAlt }
+  endOfNode
+}
+
+atomOrSeqOrAlt {
+  Alternative | atomOrSeq
+}
+
+atomOrSeq {
+  Sequence | atom
+}
+
+atom {
+  Identifier
+| Token
+| Optional
+| Repetition
+| Group
+| Label
+}
+
+Rule { atom }
+
+Sequence { Rule (!seq Rule)+ }
+
+Alternative { Rule { atomOrSeq } ("|" Rule { atomOrSeq })+ }
+
+Optional { Rule "?" }
+
+Repetition { Rule "*" }
+
+Group { "(" Rule { atomOrSeqOrAlt } ")" }
+
+Label {
+  Identifier !label
+  ":"
+  Rule
+}
+
+@external tokens endOfNode from "./tokens" { endOfNode }
+
+@local tokens {
+  tokenEnd { "'" }
+  escape { "\\" $['\\] }
+  InvalidEscape { "\\" !['\\] }
+  Unclosed { $[\r\n] | @eof }
+  @else tokenContent
+}
+@skip {} {
+  Token { "'" (tokenContent | escape | InvalidEscape)* (tokenEnd | Unclosed) }
+}
+
+@tokens {
+  Identifier { $[a-zA-Z_]+ }
+
+  whitespace { $[ \n\t] }
+  WhitespaceR { $[\r] }
+
+  Comment { "//" ![\r\n]* }
+}
+
+@skip { whitespace | WhitespaceR | Comment }
+
+@external propSource ungramHighlight from "./highlight"
+
+@detectDelim

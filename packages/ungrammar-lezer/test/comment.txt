@@ -1,0 +1,31 @@
+# Single comment
+
+// Foo bar
+
+==>
+
+Grammar(Comment)
+
+# Multiple comments
+
+// Bar
+// Hello
+
+==>
+
+Grammar(Comment, Comment)
+
+# Mixed comments
+
+// Bar
+Foo = Bar
+// Hello
+Bar = 'Tar'
+
+==>
+
+Grammar(
+  Comment,
+  Node(Identifier, Rule(Identifier)),
+  Comment,
+  Node(Identifier, Rule(Token)))

@@ -1,0 +1,115 @@
+# Simple rule
+
+Program = Foo
+
+==>
+
+Grammar(
+  Node(
+    Identifier,
+    Rule(Identifier)))
+
+# Optional rule
+
+Program = Foo?
+
+==>
+
+Grammar(
+  Node(
+    Identifier,
+    Rule(Optional(
+      Rule(Identifier)))))
+
+# Repeat rule
+
+Program = Foo*
+
+==>
+
+Grammar(
+  Node(
+    Identifier,
+    Rule(Repetition(
+      Rule(Identifier)))))
+
+# Group rule
+
+Program = (Foo Bar)
+
+==>
+
+Grammar(
+  Node(
+    Identifier,
+    Rule(Group(
+      Rule(Sequence(
+        Rule(Identifier),
+        Rule(Identifier)))))))
+
+# Alternative rule
+
+Program = Foo | Bar
+
+==>
+
+Grammar(
+  Node(
+    Identifier,
+    Rule(Alternative(
+      Rule(Identifier),
+      Rule(Identifier)))))
+
+# Sequence rule
+
+Program = Foo Bar
+
+==>
+
+Grammar(
+  Node(
+    Identifier,
+    Rule(Sequence(
+      Rule(Identifier),
+      Rule(Identifier)))))
+
+# Label rule
+
+Program = foo:Foo Bar
+
+==>
+
+Grammar(
+  Node(
+    Identifier,
+    Rule(Sequence(
+      Rule(Label(Identifier, Rule(Identifier))),
+      Rule(Identifier)))))
+
+# Complex rule
+
+Program =
+  Foo Bar
+| Far
+| Goo?
+| Gar*
+| label:Ead
+| ('Hoo' | Naa)
+
+==>
+
+Grammar(
+  Node(
+    Identifier,
+    Rule(Alternative(
+      Rule(Sequence(
+        Rule(Identifier),
+        Rule(Identifier))),
+      Rule(Identifier),
+      Rule(Optional(Rule(Identifier))),
+      Rule(Repetition(Rule(Identifier))),
+      Rule(Label(Identifier, Rule(Identifier))),
+      Rule(Group(
+        Rule(Alternative(
+          Rule(Token),
+          Rule(Identifier)))))))))

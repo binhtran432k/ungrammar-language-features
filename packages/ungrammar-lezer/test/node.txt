@@ -1,0 +1,57 @@
+# Single node
+
+Program = Foo
+
+==>
+
+Grammar(
+  Node(
+    Identifier,
+    Rule(Identifier)))
+
+# Multiple node
+
+Program = Foo
+Foo = Bar
+
+==>
+
+Grammar(
+  Node(
+    Identifier,
+    Rule(Identifier)),
+  Node(
+    Identifier,
+    Rule(Identifier)))
+
+# Invalid node - Missing head
+
+= Foo
+
+==>
+
+Grammar(
+  Node(
+    @error,
+    Rule(Identifier)))
+
+
+# Invalid node - Missing =
+
+Program Foo
+
+==>
+
+Grammar(
+  Node(
+    Identifier,
+    @error,
+    Rule(Identifier)))
+
+# Invalid node - Missing body
+
+Program =
+
+==>
+
+Grammar(Node(Identifier,@error))
