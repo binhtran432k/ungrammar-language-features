@@ -1,0 +1,43 @@
+# Simple token
+
+Foo = 'Bar'
+
+==>
+
+Grammar(Node(Identifier,Rule(Token)))
+
+# Empty token
+
+Foo = ''
+
+==>
+
+Grammar(Node(Identifier,Rule(Token)))
+
+# Escaped token
+
+Foo = 'Bar\\Far'
+Foo = 'Bar\'Far'
+
+==>
+
+Grammar(Node(Identifier,Rule(Token)),Node(Identifier,Rule(Token)))
+
+# Invalid token - Unexpected escape
+
+Foo = 'B\aar'
+
+==>
+
+Grammar(Node(Identifier,Rule(Token(InvalidEscape))))
+
+# Invalid token - Unclosed
+
+Foo = 'Bar
+Bar = Goo
+
+==>
+
+Grammar(
+  Node(Identifier, Rule(Token(Unclosed))),
+  Node(Identifier, Rule(Identifier)))

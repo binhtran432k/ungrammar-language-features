@@ -1,0 +1,26 @@
+{
+	"name": "ungrammar-lezer",
+	"description": "lezer-based Ungrammar grammar",
+	"version": "0.0.0",
+	"author": "Binh Tran <binhtran432k@gmail.com>",
+	"license": "MIT",
+	"main": "dist/index.js",
+	"module": "src/index.ts",
+	"type": "module",
+	"scripts": {
+		"prepare": "bun generate && bun run build",
+		"generate": "lezer-generator src/ungrammar.grammar -o src/parser",
+		"build": "bun build.ts --production"
+	},
+	"dependencies": {
+		"@lezer/highlight": "^1.2.0",
+		"@lezer/lr": "^1.4.1"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"@lezer/generator": "^1.7.1"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	}
+}

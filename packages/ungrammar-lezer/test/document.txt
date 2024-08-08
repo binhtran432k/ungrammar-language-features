@@ -1,0 +1,27 @@
+# Empty document
+
+==>
+
+Grammar
+
+# Simple document
+
+Program = 'Foo'
+
+==>
+
+Grammar(
+  Node(
+    Identifier,
+    Rule(Token)))
+
+# Invalid document
+
+Program
+
+==>
+
+Grammar(
+  Node(
+    Identifier,
+    @error))
