@@ -32,5 +32,9 @@ jobs:
       - name: Run biome ci check
         run: bun ci
 
+      - name: Compile lezer
+        working-directory: packages/ungrammar-lezer
+        run: bun compile
+
       - name: Run test
         run: bun test

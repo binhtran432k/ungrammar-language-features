@@ -4,13 +4,15 @@
 	"version": "0.0.0",
 	"author": "Binh Tran <binhtran432k@gmail.com>",
 	"license": "MIT",
-	"main": "dist/index.js",
-	"module": "src/index.ts",
+	"main": "./lib/umd/index.js",
+	"typings": "./lib/umd/index",
+	"module": "./lib/esm/index.js",
 	"type": "module",
 	"scripts": {
-		"prepare": "bun generate && bun run build",
-		"generate": "lezer-generator src/ungrammar.grammar -o src/parser",
-		"build": "bun build.ts --production"
+		"compile": "bun compile:parser && bun compile:umd && bun compile:esm",
+		"compile:parser": "lezer-generator src/ungrammar.grammar -o src/parser",
+		"compile:umd": "tsc -p ./src",
+		"compile:esm": "tsc -p ./src/tsconfig.esm.json"
 	},
 	"dependencies": {
 		"@lezer/highlight": "^1.2.0",
