@@ -10,6 +10,6 @@
 		}
 	},
 	"files": {
-		"ignore": ["dist/", "parser.js", "parser.terms.js"]
+		"ignore": ["dist/", "lib/umd", "lib/esm", "parser.js", "parser.terms.js"]
 	}
 }
