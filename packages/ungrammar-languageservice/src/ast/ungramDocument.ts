@@ -1,8 +1,19 @@
 import { type SyntaxNodeRef, type Tree, TreeFragment } from "@lezer/common";
 import { parser } from "ungrammar-lezer";
-import { DiagnosticSeverity } from "vscode-languageserver-types";
-import { Diagnostic, Range, type TextDocument } from "../ungramLanguageTypes";
-import { AstVisitor, Grammar, type Identifier, type Token } from "./generated";
+import {
+	type Diagnostic,
+	DiagnosticSeverity,
+	ErrorCode,
+	type IProblem,
+	Range,
+	type TextDocument,
+} from "../ungramLanguageTypes.js";
+import {
+	AstVisitor,
+	Grammar,
+	type Identifier,
+	type Token,
+} from "./generated.js";
 
 export interface UngramDocument {
 	tree: Tree;
@@ -58,87 +69,122 @@ function parseTree(
 }
 
 export function validateUngramDocument(
-	document: UngramDocument,
-	textDocument: TextDocument,
+	document: TextDocument,
+	ungramDocument: UngramDocument,
 ): Diagnostic[] {
-	const syntaxDiagnostics = document.unknowns.map((unkonwn) =>
-		getSyntaxError(unkonwn, textDocument),
+	return getUngramProblems(document, ungramDocument).map(
+		parseErrorDiagnostic.bind(null, document),
 	);
-
-	const redeclareDiagnostics = getRedeclareDefinitions(document).map((def) => {
-		const range = getNodeRange(def, textDocument);
-		return Diagnostic.create(
-			range,
-			`Cannot redeclare node '${textDocument.getText(range)}'.`,
-			DiagnosticSeverity.Error,
-		);
-	});
-	const undefinedDiagnostics = getUndefinedIdentifiers(
-		document,
-		textDocument,
-	).map((def) => {
-		const range = getNodeRange(def, textDocument);
-		return Diagnostic.create(
-			range,
-			`Cannot find name '${textDocument.getText(range)}'.`,
-			DiagnosticSeverity.Error,
-		);
-	});
-
-	return [syntaxDiagnostics, redeclareDiagnostics, undefinedDiagnostics].flat();
 }
 
-function getRedeclareDefinitions(document: UngramDocument): SyntaxNodeRef[] {
-	const redeclareDefinitions: SyntaxNodeRef[] = [];
-	for (const [, defs] of document.definitionMap.entries()) {
+export function getUngramProblems(
+	textDocument: TextDocument,
+	ungramDocument: UngramDocument,
+): IProblem[] {
+	return [
+		...getSyntaxProblems(textDocument, ungramDocument),
+		...getUndefinedIdentifierProblems(textDocument, ungramDocument),
+		...getRedeclareDefinitionProblems(textDocument, ungramDocument),
+	];
+}
+
+function getSyntaxProblems(
+	document: TextDocument,
+	ungramDocument: UngramDocument,
+): IProblem[] {
+	return ungramDocument.unknowns
+		.filter((n) => !n.type.is("Comment"))
+		.map((unknown) => {
+			let code: ErrorCode = ErrorCode.Unexpected;
+			if (unknown.type.is("InvalidEscape")) {
+				code = ErrorCode.InvalidEscape;
+			} else if (unknown.type.is("WhitespaceR")) {
+				code = ErrorCode.UnexpectedWhitespaceR;
+			} else if (unknown.type.is("Unclosed")) {
+				code = ErrorCode.EndOfTokenExpected;
+			} else if (unknown.from === unknown.to) {
+				if (unknown.node.parent?.type.is("Node")) {
+					code = ErrorCode.NodeChildExpected;
+				} else {
+					code = ErrorCode.Missing;
+				}
+			}
+			return {
+				code,
+				range: getNodeRange(unknown, document),
+			};
+		});
+}
+
+function getRedeclareDefinitionProblems(
+	document: TextDocument,
+	ungramDocument: UngramDocument,
+): IProblem[] {
+	const problems: IProblem[] = [];
+	for (const [, defs] of ungramDocument.definitionMap.entries()) {
 		if (defs.length > 1) {
 			for (const def of defs) {
-				redeclareDefinitions.push(def);
+				problems.push({
+					code: ErrorCode.RedeclaredDefinition,
+					range: getNodeRange(def, document),
+				});
 			}
 		}
 	}
-	return redeclareDefinitions;
+	return problems;
 }
 
-function getUndefinedIdentifiers(
-	document: UngramDocument,
-	textDocument: TextDocument,
-): SyntaxNodeRef[] {
-	const undefinedIdentifiers: SyntaxNodeRef[] = [];
-	for (const ident of document.identifiers) {
-		const [name] = getNodeValue(ident, textDocument);
-		if (!document.definitionMap.get(name)) {
-			undefinedIdentifiers.push(ident);
+function getUndefinedIdentifierProblems(
+	document: TextDocument,
+	ungramDocument: UngramDocument,
+): IProblem[] {
+	const problems: IProblem[] = [];
+	for (const ident of ungramDocument.identifiers) {
+		const [name, range] = getNodeValue(ident, document);
+		if (!ungramDocument.definitionMap.get(name)) {
+			problems.push({
+				code: ErrorCode.UndefinedIdentifier,
+				range,
+			});
 		}
 	}
-	return undefinedIdentifiers;
+	return problems;
 }
 
-function getSyntaxError(
-	nodeRef: SyntaxNodeRef,
-	textDocument: TextDocument,
+function parseErrorDiagnostic(
+	document: TextDocument,
+	problem: IProblem,
 ): Diagnostic {
-	const range = getNodeRange(nodeRef, textDocument);
-	let message: string;
-	if (nodeRef.type.is("InvalidEscape")) {
-		message = `Unexpected escape \`${textDocument.getText(range)}\`.`;
-	} else if (nodeRef.type.is("WhitespaceR")) {
-		const char = unescapeString(textDocument.getText(range));
-		message = `Unexpected \`${char}\`, only Unix-style line endings allowed.`;
-	} else if (nodeRef.type.is("Unclosed")) {
-		message = "Expected a close token.";
-	} else if (nodeRef.from === nodeRef.to) {
-		if (nodeRef.node.parent?.type.is("Node")) {
-			message = "Missing a token. Maybe `Identifier`, `=`, or `Rule`";
-		} else {
-			message = "Missing a token.";
+	return {
+		range: problem.range,
+		severity: DiagnosticSeverity.Error,
+		message: parseErrorMessage(document, problem),
+	};
+}
+
+function parseErrorMessage(document: TextDocument, problem: IProblem): string {
+	switch (problem.code) {
+		case ErrorCode.InvalidEscape:
+			return `Unexpected escape \`${document.getText(problem.range)}\`.`;
+		case ErrorCode.UnexpectedWhitespaceR: {
+			const char = unescapeString(document.getText(problem.range));
+			return `Unexpected \`${char}\`, only Unix-style line endings allowed.`;
 		}
-	} else if (nodeRef.type.isError) {
-		message = `Unexpected \`${textDocument.getText(range)}\`.`;
-	} else {
-		message = `Unexpected token \`${nodeRef.type.name}\`.`;
+		case ErrorCode.EndOfTokenExpected:
+			return "Expected an end of token `'`.";
+		case ErrorCode.NodeChildExpected:
+			return "Missing something. Maybe `Identifier`, `=`, or `Rule`";
+		case ErrorCode.Missing:
+			return "Missing something.";
+		case ErrorCode.Unexpected:
+			return `Unexpected \`${document.getText(problem.range)}\``;
+		case ErrorCode.RedeclaredDefinition:
+			return `Cannot redeclare node '${document.getText(problem.range)}'.`;
+		case ErrorCode.UndefinedIdentifier:
+			return `Cannot find name '${document.getText(problem.range)}'.`;
+		default:
+			return `Unhandled ErrorCode ${problem.code}.`;
 	}
-	return Diagnostic.create(range, message, DiagnosticSeverity.Error);
 }
 
 function unescapeString(value: string) {

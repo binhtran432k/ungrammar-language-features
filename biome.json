@@ -13,6 +13,13 @@
 		}
 	},
 	"files": {
-		"ignore": ["dist/", "lib/umd", "lib/esm", "parser.js", "parser.terms.js"]
+		"ignore": [
+			"dist/",
+			"out/",
+			"lib/cjs",
+			"lib/esm",
+			"parser.js",
+			"parser.terms.js"
+		]
 	}
 }

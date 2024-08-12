@@ -1,5 +1,5 @@
-import { ContextTracker, ExternalTokenizer } from "@lezer/lr";
-import * as terms from "./parser.terms";
+import { ExternalTokenizer } from "@lezer/lr";
+import * as terms from "./parser.terms.js";
 
 const SPACE = [
 	// \t
