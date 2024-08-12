@@ -3,7 +3,7 @@ import assert from "node:assert";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileTests } from "@lezer/generator/dist/test";
-import { parser } from "../src/index";
+import { parser } from "../src/index.js";
 
 const caseDir = Bun.fileURLToPath(new URL("../test/", import.meta.url));
 

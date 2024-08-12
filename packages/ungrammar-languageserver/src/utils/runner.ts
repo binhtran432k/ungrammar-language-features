@@ -3,7 +3,7 @@ import {
 	LSPErrorCodes,
 	ResponseError,
 } from "vscode-languageserver";
-import type { RuntimeEnvironment } from "../ungramServer";
+import type { RuntimeEnvironment } from "../ungramServer.js";
 
 export function formatError(message: string, err: unknown): string {
 	if (err instanceof Error) {
