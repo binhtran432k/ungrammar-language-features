@@ -36,5 +36,9 @@ jobs:
         working-directory: packages/ungrammar-lezer
         run: bun compile
 
+      - name: Compile languageservice
+        working-directory: packages/ungrammar-languageservice
+        run: bun compile
+
       - name: Run test
         run: bun test

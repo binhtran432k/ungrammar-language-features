@@ -1,0 +1,25 @@
+Grammar = Node*
+
+Node = name:'ident' '=' Rule
+
+Rule =
+  'ident'
+| 'token'
+| Sequence
+| Alternative
+| Optional
+| Repetition
+| Group
+| Label
+
+Sequence = Rule*
+
+Alternative = Rule ('|' Rule)*
+
+Optional = Rule '?'
+
+Repetition = Rule '*'
+
+Group = '(' Rule ')'
+
+Label = label:'ident' ':' Rule
