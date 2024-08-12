@@ -7,7 +7,11 @@
 	"type": "module",
 	"scripts": {
 		"ci": "biome ci",
-		"fix": "biome check --fix --unsafe"
+		"fix": "biome check --fix --unsafe",
+		"compile": "bun compile:lezer && bun compile:service && bun compile:server",
+		"compile:server": "bun --cwd packages/ungrammar-languageserver compile",
+		"compile:service": "bun --cwd packages/ungrammar-languageservice compile",
+		"compile:lezer": "bun --cwd packages/ungrammar-lezer compile"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.8.3",

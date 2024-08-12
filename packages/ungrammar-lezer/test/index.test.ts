@@ -2,14 +2,10 @@ import { describe, it } from "bun:test";
 import assert from "node:assert";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { fileURLToPath } from "node:url";
 import { fileTests } from "@lezer/generator/dist/test";
 import { parser } from "../src/index";
 
-const caseDir = path.join(
-	path.dirname(fileURLToPath(import.meta.url)),
-	"../test/",
-);
+const caseDir = Bun.fileURLToPath(new URL("../test/", import.meta.url));
 
 // Test testcase that is writable
 for (const file of fs.readdirSync(caseDir)) {

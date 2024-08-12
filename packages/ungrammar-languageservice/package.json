@@ -4,15 +4,18 @@
 	"version": "0.0.0",
 	"author": "Binh Tran <binhtran432k@gmail.com>",
 	"license": "MIT",
-	"main": "./lib/umd/ungramLanguageService.js",
-	"types": "./lib/umd/ungramLanguageService",
-	"module": "./lib/esm/ungramLanguageService.js",
+	"main": "./lib/esm/ungramLanguageService.js",
+	"types": "./lib/esm/ungramLanguageService",
+	"exports": {
+		"import": "./lib/esm/ungramLanguageService.js",
+		"require": "./lib/cjs/ungramLanguageService.js"
+	},
 	"type": "module",
 	"scripts": {
 		"codegen": "bun scripts/codegen.ts",
-		"compile": "bun compile:umd && bun compile:esm",
-		"compile:umd": "tsc -p ./src",
-		"compile:esm": "tsc -p ./src/tsconfig.esm.json"
+		"compile": "bun compile:cjs && bun compile:esm",
+		"compile:cjs": "tsc -p ./src/tsconfig.cjs.json",
+		"compile:esm": "tsc -p ./src"
 	},
 	"dependencies": {
 		"@lezer/common": "^1.2.1",

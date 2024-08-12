@@ -44,7 +44,7 @@ Label {
   Rule
 }
 
-@external tokens endOfNode from "./tokens" { endOfNode }
+@external tokens endOfNode from "./tokens.js" { endOfNode }
 
 @local tokens {
   tokenEnd { "'" }
@@ -68,6 +68,6 @@ Label {
 
 @skip { whitespace | WhitespaceR | Comment }
 
-@external propSource ungramHighlight from "./highlight"
+@external propSource ungramHighlight from "./highlight.js"
 
 @detectDelim

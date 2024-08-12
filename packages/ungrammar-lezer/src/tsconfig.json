@@ -1,7 +1,10 @@
 {
 	"extends": "./tsconfig.base.json",
 	"compilerOptions": {
-		"module": "umd",
-		"outDir": "../lib/umd"
+		"sourceMap": true,
+		"declaration": true,
+		"stripInternal": true,
+		"module": "es6",
+		"outDir": "../lib/esm"
 	}
 }
