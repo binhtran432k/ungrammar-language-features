@@ -9,12 +9,12 @@ import {
 	type Repetition,
 	type Rule,
 	type Token,
-} from "../src/ast/generated";
+} from "../src/ast/generated.js";
 import {
 	getNodeValue,
 	newUngramDocument,
 	validateUngramDocument,
-} from "../src/ast/ungramDocument";
+} from "../src/ast/ungramDocument.js";
 
 export async function main() {
 	const ungramFile = Bun.file("src/ast/ungrammar.ungram");
@@ -22,7 +22,7 @@ export async function main() {
 	const textDocument = TextDocument.create("/codegen", "ungrammar", 0, data);
 	const document = newUngramDocument(textDocument);
 
-	const diagnostics = validateUngramDocument(document, textDocument);
+	const diagnostics = validateUngramDocument(textDocument, document);
 	if (diagnostics.length > 0) {
 		for (const diagnostic of diagnostics) {
 			console.error(

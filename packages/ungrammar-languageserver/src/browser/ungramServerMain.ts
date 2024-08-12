@@ -4,7 +4,7 @@ import {
 	type Disposable,
 	createConnection,
 } from "vscode-languageserver/browser";
-import { type RuntimeEnvironment, startServer } from "../ungramServer";
+import { type RuntimeEnvironment, startServer } from "../ungramServer.js";
 
 const messageReader = new BrowserMessageReader(self);
 const messageWriter = new BrowserMessageWriter(self);
