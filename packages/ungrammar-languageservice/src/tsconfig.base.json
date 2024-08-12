@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"target": "es2020",
+		"moduleResolution": "node",
+		"sourceMap": true,
+		"declaration": true,
+		"stripInternal": true,
+		"lib": ["es2020"],
+		"strict": true,
+		"skipLibCheck": true,
+		"allowJs": true
+	}
+}

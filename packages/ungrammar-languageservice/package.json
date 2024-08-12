@@ -1,0 +1,29 @@
+{
+	"name": "ungrammar-languageservice",
+	"description": "Language service for Ungrammar",
+	"version": "0.0.0",
+	"author": "Binh Tran <binhtran432k@gmail.com>",
+	"license": "MIT",
+	"main": "./lib/umd/ungramLanguageService.js",
+	"types": "./lib/umd/ungramLanguageService",
+	"module": "./lib/esm/ungramLanguageService.js",
+	"type": "module",
+	"scripts": {
+		"codegen": "bun scripts/codegen.ts",
+		"compile": "bun compile:umd && bun compile:esm",
+		"compile:umd": "tsc -p ./src",
+		"compile:esm": "tsc -p ./src/tsconfig.esm.json"
+	},
+	"dependencies": {
+		"@lezer/common": "^1.2.1",
+		"ungrammar-lezer": "0.0.0",
+		"vscode-languageserver-textdocument": "^1.0.11",
+		"vscode-languageserver-types": "^3.17.5"
+	},
+	"devDependencies": {
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	}
+}
