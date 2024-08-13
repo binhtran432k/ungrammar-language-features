@@ -1,4 +1,5 @@
-import { newUngramDocument } from "./ast/ungramDocument.js";
+import { UngramDocument } from "./ast/ungramDocument.js";
+import { UngramCompletion } from "./services/ungramCompletion.js";
 import { UngramValidation } from "./services/ungramValidation.js";
 import type {
 	LanguageService,
@@ -6,6 +7,7 @@ import type {
 	LanguageServiceState,
 } from "./ungramLanguageTypes.js";
 
+export { UngramDocument } from "./ast/ungramDocument.js";
 export * from "./ungramLanguageTypes.js";
 
 export function getLanguageService(
@@ -18,6 +20,13 @@ export function getLanguageService(
 
 	return {
 		doValidation: UngramValidation.doValidation.bind(null, state),
-		parseUngramDocument: newUngramDocument,
+		parseUngramDocument(document, ungramDocument) {
+			if (ungramDocument === undefined) {
+				return UngramDocument.parse(document);
+			}
+			UngramDocument.reparse(document, ungramDocument);
+			return ungramDocument;
+		},
+		doComplete: UngramCompletion.doComplete.bind(null, state),
 	};
 }

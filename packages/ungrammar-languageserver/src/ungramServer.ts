@@ -17,6 +17,7 @@ import {
 	type LanguageModelCache,
 	getLanguageModelCache,
 } from "./languageModelCache.js";
+import { runSafeAsync } from "./utils/runner.js";
 import {
 	type DiagnosticsSupport,
 	registerDiagnosticsPullSupport,
@@ -94,10 +95,14 @@ export function startServer(
 			connection,
 			runtime,
 			validateTextDocument.bind(null, state),
+			!!params.capabilities.workspace?.diagnostics?.refreshSupport,
 		);
 
 		const capabilities: ServerCapabilities = {
 			textDocumentSync: TextDocumentSyncKind.Incremental,
+			completionProvider: {
+				resolveProvider: false,
+			},
 			diagnosticProvider: {
 				documentSelector: null,
 				interFileDependencies: false,
@@ -116,12 +121,32 @@ export function startServer(
 		updateConfiguration(state);
 	});
 
+	documents.onDidClose((e) => {
+		state.ungramDocumentCache.onDocumentRemoved(e.document);
+	});
 	connection.onShutdown(() => {
 		state.ungramDocumentCache.dispose();
 	});
 
-	documents.onDidClose((e) => {
-		state.ungramDocumentCache.onDocumentRemoved(e.document);
+	connection.onCompletion((textDocumentPosition, token) => {
+		return runSafeAsync(
+			runtime,
+			async () => {
+				const document = documents.get(textDocumentPosition.textDocument.uri);
+				if (document) {
+					const ungramDocument = getUngramDocument(state, document);
+					return languageService.doComplete(
+						document,
+						ungramDocument,
+						textDocumentPosition.position,
+					);
+				}
+				return null;
+			},
+			null,
+			`Error while computing completions for ${textDocumentPosition.textDocument.uri}`,
+			token,
+		);
 	});
 
 	// Listen on the connection

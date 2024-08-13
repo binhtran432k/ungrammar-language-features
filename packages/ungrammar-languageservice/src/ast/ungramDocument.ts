@@ -24,68 +24,132 @@ export interface UngramDocument {
 	identifiers: SyntaxNodeRef[];
 }
 
-export function newUngramDocument(textDocument: TextDocument): UngramDocument {
-	const [tree, fragments] = parseTree(textDocument, []);
-	const unknowns: SyntaxNodeRef[] = [];
-	const grammar = new Grammar(tree.cursor(), unknowns);
+export namespace UngramDocument {
+	export function parse(document: TextDocument): UngramDocument {
+		const [tree, fragments] = parseTree(document, []);
+		const unknowns: SyntaxNodeRef[] = [];
+		const grammar = new Grammar(tree.cursor(), unknowns);
 
-	const identifierVisitor = new IdentifierVisitor(textDocument);
-	grammar.accept(identifierVisitor);
+		const identifierVisitor = new IdentifierVisitor(document);
+		grammar.accept(identifierVisitor);
 
-	return {
-		tree,
-		fragments,
-		grammar,
-		unknowns,
-		definitionMap: identifierVisitor.definitionMap,
-		identifiers: identifierVisitor.identifiers,
-	};
-}
+		return {
+			tree,
+			fragments,
+			grammar,
+			unknowns,
+			definitionMap: identifierVisitor.definitionMap,
+			identifiers: identifierVisitor.identifiers,
+		};
+	}
 
-export function reparseUngramDocument(
-	document: UngramDocument,
-	textDocument: TextDocument,
-): void {
-	const [tree, fragments] = parseTree(textDocument, document.fragments);
-	document.tree = tree;
-	document.fragments = fragments;
-	document.unknowns = [];
-	document.grammar = new Grammar(tree.cursor(), document.unknowns);
+	export function reparse(
+		document: TextDocument,
+		ungramDocument: UngramDocument,
+	): void {
+		const [tree, fragments] = parseTree(document, ungramDocument.fragments);
+		ungramDocument.tree = tree;
+		ungramDocument.fragments = fragments;
+		ungramDocument.unknowns = [];
+		ungramDocument.grammar = new Grammar(
+			tree.cursor(),
+			ungramDocument.unknowns,
+		);
 
-	const identifierVisitor = new IdentifierVisitor(textDocument);
-	document.grammar.accept(identifierVisitor);
+		const identifierVisitor = new IdentifierVisitor(document);
+		ungramDocument.grammar.accept(identifierVisitor);
 
-	document.definitionMap = identifierVisitor.definitionMap;
-	document.identifiers = identifierVisitor.identifiers;
+		ungramDocument.definitionMap = identifierVisitor.definitionMap;
+		ungramDocument.identifiers = identifierVisitor.identifiers;
+	}
+
+	export function validate(
+		document: TextDocument,
+		ungramDocument: UngramDocument,
+	): Diagnostic[] {
+		return getProblems(document, ungramDocument).map(
+			parseErrorDiagnostic.bind(null, document),
+		);
+	}
+
+	export function getProblems(
+		document: TextDocument,
+		ungramDocument: UngramDocument,
+	): IProblem[] {
+		return [
+			...getSyntaxProblems(document, ungramDocument),
+			...getUndefinedIdentifierProblems(document, ungramDocument),
+			...getRedeclareDefinitionProblems(document, ungramDocument),
+		];
+	}
+
+	export function getNodeRange(
+		nodeRef: SyntaxNodeRef,
+		textDocument: TextDocument,
+	) {
+		return Range.create(
+			textDocument.positionAt(nodeRef.from),
+			textDocument.positionAt(nodeRef.to),
+		);
+	}
+
+	export function getNodeText(
+		nodeRef: SyntaxNodeRef,
+		textDocument: TextDocument,
+	): [string, Range] {
+		const range = getNodeRange(nodeRef, textDocument);
+		return [textDocument.getText(range), range];
+	}
+
+	export function resolveNodeText(
+		document: TextDocument,
+		ungramDocument: UngramDocument,
+		offset: number,
+	): string | undefined {
+		const node = ungramDocument.tree.resolve(offset);
+		if (node.parent && node.matchContext(["Node"])) {
+			const [nodeData] = getNodeText(node.parent, document);
+			return nodeData;
+		}
+	}
+
+	export function resolveNodesText(
+		document: TextDocument,
+		ungramDocument: UngramDocument,
+		nodes: SyntaxNodeRef[],
+	): string | undefined {
+		return nodes
+			.map(
+				(node) =>
+					`\`\`\`ungrammar\n${resolveNodeText(document, ungramDocument, node.from + 1)}\n\`\`\``,
+			)
+			.join("\n");
+	}
+
+	export function isInComment(
+		ungramDocument: UngramDocument,
+		offset: number,
+	): boolean {
+		const node = ungramDocument.tree.resolve(offset);
+		return node.type.is("Comment") || node.matchContext(["Comment"]);
+	}
+
+	export function isInToken(
+		ungramDocument: UngramDocument,
+		offset: number,
+	): boolean {
+		const node = ungramDocument.tree.resolve(offset);
+		return node.type.is("Token") || node.matchContext(["Token"]);
+	}
 }
 
 function parseTree(
-	textDocument: TextDocument,
+	document: TextDocument,
 	fragments: readonly TreeFragment[],
 ): [Tree, typeof fragments] {
-	const tree = parser.parse(textDocument.getText(), fragments);
+	const tree = parser.parse(document.getText(), fragments);
 	const newFragments = TreeFragment.addTree(tree, fragments);
 	return [tree, newFragments];
-}
-
-export function validateUngramDocument(
-	document: TextDocument,
-	ungramDocument: UngramDocument,
-): Diagnostic[] {
-	return getUngramProblems(document, ungramDocument).map(
-		parseErrorDiagnostic.bind(null, document),
-	);
-}
-
-export function getUngramProblems(
-	textDocument: TextDocument,
-	ungramDocument: UngramDocument,
-): IProblem[] {
-	return [
-		...getSyntaxProblems(textDocument, ungramDocument),
-		...getUndefinedIdentifierProblems(textDocument, ungramDocument),
-		...getRedeclareDefinitionProblems(textDocument, ungramDocument),
-	];
 }
 
 function getSyntaxProblems(
@@ -111,7 +175,7 @@ function getSyntaxProblems(
 			}
 			return {
 				code,
-				range: getNodeRange(unknown, document),
+				range: UngramDocument.getNodeRange(unknown, document),
 			};
 		});
 }
@@ -121,12 +185,12 @@ function getRedeclareDefinitionProblems(
 	ungramDocument: UngramDocument,
 ): IProblem[] {
 	const problems: IProblem[] = [];
-	for (const [, defs] of ungramDocument.definitionMap.entries()) {
+	for (const defs of ungramDocument.definitionMap.values()) {
 		if (defs.length > 1) {
 			for (const def of defs) {
 				problems.push({
 					code: ErrorCode.RedeclaredDefinition,
-					range: getNodeRange(def, document),
+					range: UngramDocument.getNodeRange(def, document),
 				});
 			}
 		}
@@ -140,7 +204,7 @@ function getUndefinedIdentifierProblems(
 ): IProblem[] {
 	const problems: IProblem[] = [];
 	for (const ident of ungramDocument.identifiers) {
-		const [name, range] = getNodeValue(ident, document);
+		const [name, range] = UngramDocument.getNodeText(ident, document);
 		if (!ungramDocument.definitionMap.get(name)) {
 			problems.push({
 				code: ErrorCode.UndefinedIdentifier,
@@ -194,24 +258,6 @@ function unescapeString(value: string) {
 		.join("");
 }
 
-export function getNodeRange(
-	nodeRef: SyntaxNodeRef,
-	textDocument: TextDocument,
-) {
-	return Range.create(
-		textDocument.positionAt(nodeRef.from),
-		textDocument.positionAt(nodeRef.to),
-	);
-}
-
-export function getNodeValue(
-	nodeRef: SyntaxNodeRef,
-	textDocument: TextDocument,
-): [string, Range] {
-	const range = getNodeRange(nodeRef, textDocument);
-	return [textDocument.getText(range), range];
-}
-
 export class IdentifierVisitor extends AstVisitor {
 	definitionMap: Map<string, SyntaxNodeRef[]> = new Map();
 	identifiers: SyntaxNodeRef[] = [];
@@ -222,7 +268,10 @@ export class IdentifierVisitor extends AstVisitor {
 
 	override visitIdentifier(acceptor: Identifier): void {
 		if (acceptor.syntax.matchContext(["Node"])) {
-			const [name] = getNodeValue(acceptor.syntax, this.textDocument);
+			const [name] = UngramDocument.getNodeText(
+				acceptor.syntax,
+				this.textDocument,
+			);
 			if (!this.definitionMap.get(name)) {
 				this.definitionMap.set(name, []);
 			}

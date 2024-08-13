@@ -10,19 +10,15 @@ import {
 	type Rule,
 	type Token,
 } from "../src/ast/generated.js";
-import {
-	getNodeValue,
-	newUngramDocument,
-	validateUngramDocument,
-} from "../src/ast/ungramDocument.js";
+import { UngramDocument } from "../src/ast/ungramDocument.js";
 
 export async function main() {
 	const ungramFile = Bun.file("src/ast/ungrammar.ungram");
 	const data = await ungramFile.text();
 	const textDocument = TextDocument.create("/codegen", "ungrammar", 0, data);
-	const document = newUngramDocument(textDocument);
+	const document = UngramDocument.parse(textDocument);
 
-	const diagnostics = validateUngramDocument(textDocument, document);
+	const diagnostics = UngramDocument.validate(textDocument, document);
 	if (diagnostics.length > 0) {
 		for (const diagnostic of diagnostics) {
 			console.error(
@@ -344,7 +340,10 @@ class PropertyVisitor extends AstVisitor {
 	}
 
 	override visitIdentifier(acceptor: Identifier): void {
-		const [name] = getNodeValue(acceptor.syntax, this.textDocument);
+		const [name] = UngramDocument.getNodeText(
+			acceptor.syntax,
+			this.textDocument,
+		);
 		if (acceptor.syntax.matchContext(["Label"])) {
 			this.label = name;
 		} else {
@@ -353,7 +352,10 @@ class PropertyVisitor extends AstVisitor {
 	}
 
 	override visitToken(acceptor: Token): void {
-		const [tokenValue] = getNodeValue(acceptor.syntax, this.textDocument);
+		const [tokenValue] = UngramDocument.getNodeText(
+			acceptor.syntax,
+			this.textDocument,
+		);
 		const name = tokenValue.slice(1, -1);
 
 		this.processIdentMap(name, true);

@@ -23,6 +23,7 @@ export type RegisterDiagnosticsSupportFunction = (
 	connection: Connection,
 	runtime: RuntimeEnvironment,
 	validate: Validator,
+	hasWorkspaceDiagnosticsRefreshSupport: boolean,
 ) => DiagnosticsSupport;
 
 export const registerDiagnosticsPushSupport: RegisterDiagnosticsSupportFunction =
@@ -105,7 +106,13 @@ export const registerDiagnosticsPushSupport: RegisterDiagnosticsSupportFunction 
 	};
 
 export const registerDiagnosticsPullSupport: RegisterDiagnosticsSupportFunction =
-	(documents, connection, runtime, validate) => {
+	(
+		documents,
+		connection,
+		runtime,
+		validate,
+		hasWorkspaceDiagnosticsRefreshSupport,
+	) => {
 		function newDocumentDiagnosticReport(
 			diagnostics: Diagnostic[],
 		): DocumentDiagnosticReport {
@@ -134,9 +141,9 @@ export const registerDiagnosticsPullSupport: RegisterDiagnosticsSupportFunction 
 		);
 
 		return {
-			requestRefresh: () => {
-				connection.languages.diagnostics.refresh();
-			},
+			requestRefresh: hasWorkspaceDiagnosticsRefreshSupport
+				? () => connection.languages.diagnostics.refresh()
+				: () => {},
 			dispose: () => {
 				registration.dispose();
 			},

@@ -1,11 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { getUngramProblems } from "../ast/ungramDocument.js";
+import { UngramDocument } from "../ast/ungramDocument.js";
 import { getLanguageService } from "../ungramLanguageService.js";
 import {
 	ErrorCode,
 	type IProblem,
 	TextDocument,
-	type UngramDocument,
 } from "../ungramLanguageTypes.js";
 
 describe("Ungrammar AST", () => {
@@ -40,7 +39,7 @@ describe("Ungrammar AST", () => {
 
 		const ls = getLanguageService({});
 		const ungramDoc = ls.parseUngramDocument(textDoc);
-		const problems = getUngramProblems(textDoc, ungramDoc);
+		const problems = UngramDocument.getProblems(textDoc, ungramDoc);
 		return { textDoc, ungramDoc, problems };
 	}
 
