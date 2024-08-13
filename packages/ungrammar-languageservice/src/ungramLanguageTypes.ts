@@ -1,21 +1,37 @@
 import type { TextDocument } from "vscode-languageserver-textdocument";
-import type { Diagnostic, Range } from "vscode-languageserver-types";
+import type {
+	CompletionList,
+	Diagnostic,
+	Position,
+	Range,
+} from "vscode-languageserver-types";
 import type { UngramDocument } from "./ast/ungramDocument.js";
 
 export { TextDocument } from "vscode-languageserver-textdocument";
 export {
+	CompletionItem,
+	CompletionItemKind,
+	CompletionList,
 	Diagnostic,
 	DiagnosticSeverity,
+	Position,
 	Range,
 } from "vscode-languageserver-types";
-export { type UngramDocument } from "./ast/ungramDocument.js";
 
 export interface LanguageService {
 	doValidation(
 		document: TextDocument,
 		ungramDocument: UngramDocument,
 	): PromiseLike<Diagnostic[]>;
-	parseUngramDocument(document: TextDocument): UngramDocument;
+	parseUngramDocument(
+		document: TextDocument,
+		ungramDocument?: UngramDocument,
+	): UngramDocument;
+	doComplete(
+		document: TextDocument,
+		ungramDocument: UngramDocument,
+		position: Position,
+	): PromiseLike<CompletionList | null>;
 }
 
 export interface LanguageServiceParams {

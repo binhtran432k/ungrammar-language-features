@@ -1,7 +1,4 @@
-import {
-	type UngramDocument,
-	validateUngramDocument,
-} from "../ast/ungramDocument.js";
+import { UngramDocument } from "../ast/ungramDocument.js";
 import type {
 	Diagnostic,
 	LanguageServiceState,
@@ -29,7 +26,7 @@ export namespace UngramValidation {
 			}
 		};
 
-		validateUngramDocument(textDocument, ungramDocument).forEach(addProblem);
+		UngramDocument.validate(textDocument, ungramDocument).forEach(addProblem);
 
 		return state.promise.resolve(diagnostics);
 	}
