@@ -7,12 +7,11 @@ import {
 import { createRange, parseCursorMark } from "./utils.js";
 
 describe("Ungrammar Definition", () => {
-	const uri = "test://test.ungram";
-
 	async function testDefinition(
 		originValue: string,
 		test: (document: TextDocument, definition: Definition | null) => void,
 	) {
+		const uri = "test://test.ungram";
 		const [offset, value] = parseCursorMark(originValue);
 
 		const service = getLanguageService({});
@@ -34,7 +33,7 @@ describe("Ungrammar Definition", () => {
 		await testDefinition(content, (document, result) => {
 			expect(result).toEqual({
 				range: createRange(document, 0, 3),
-				uri,
+				uri: document.uri,
 			});
 		});
 	});
@@ -44,7 +43,7 @@ describe("Ungrammar Definition", () => {
 		await testDefinition(content, (document, result) => {
 			expect(result).toEqual({
 				range: createRange(document, 0, 3),
-				uri,
+				uri: document.uri,
 			});
 		});
 	});
@@ -54,7 +53,7 @@ describe("Ungrammar Definition", () => {
 		await testDefinition(content, (document, result) => {
 			expect(result).toEqual({
 				range: createRange(document, 9, 4),
-				uri,
+				uri: document.uri,
 			});
 		});
 	});
@@ -86,11 +85,11 @@ describe("Ungrammar Definition", () => {
 			expect(result).toEqual([
 				{
 					range: createRange(document, 0, 3),
-					uri,
+					uri: document.uri,
 				},
 				{
 					range: createRange(document, 8, 3),
-					uri,
+					uri: document.uri,
 				},
 			]);
 		});
