@@ -113,3 +113,18 @@ Grammar(
         Rule(Alternative(
           Rule(Token),
           Rule(Identifier)))))))))
+
+# Invalid rule - Unclosed group
+
+Foo = (Bar
+Bar = 'Boo'
+
+==>
+
+Grammar(
+  Node(
+    Identifier,
+    Rule(Group(Rule(Identifier), UnclosedGroup))),
+  Node(
+    Identifier,
+    Rule(Token)))

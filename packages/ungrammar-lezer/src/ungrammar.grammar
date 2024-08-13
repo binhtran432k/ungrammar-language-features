@@ -36,7 +36,7 @@ Optional { Rule "?" }
 
 Repetition { Rule "*" }
 
-Group { "(" Rule { atomOrSeqOrAlt } ")" }
+Group { "(" Rule { atomOrSeqOrAlt } (")" | UnclosedGroup { endOfNode }) }
 
 Label {
   Identifier !label
@@ -50,11 +50,11 @@ Label {
   tokenEnd { "'" }
   escape { "\\" $['\\] }
   InvalidEscape { "\\" !['\\] }
-  Unclosed { eol }
+  UnclosedToken { eol }
   @else tokenContent
 }
 @skip {} {
-  Token { "'" (tokenContent | escape | InvalidEscape)* (tokenEnd | Unclosed) }
+  Token { "'" (tokenContent | escape | InvalidEscape)* (tokenEnd | UnclosedToken) }
 }
 
 @tokens {
