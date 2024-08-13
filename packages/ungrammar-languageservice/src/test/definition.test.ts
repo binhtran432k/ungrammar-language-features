@@ -1,11 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import {
 	type Definition,
-	Range,
 	TextDocument,
 	getLanguageService,
 } from "../ungramLanguageService.js";
-import { parseCursorMark } from "./utils.js";
+import { createRange, parseCursorMark } from "./utils.js";
 
 describe("Ungrammar Definition", () => {
 	const uri = "test://test.ungram";
@@ -73,11 +72,27 @@ describe("Ungrammar Definition", () => {
 			expect(result).toEqual(null);
 		});
 	});
-});
 
-function createRange(document: TextDocument, offset: number, length: number) {
-	return Range.create(
-		document.positionAt(offset),
-		document.positionAt(offset + length),
-	);
-}
+	test("Definition Undefined Identifier", async () => {
+		const content = "Foo=Bar\nBar=B|oo";
+		await testDefinition(content, (_document, result) => {
+			expect(result).toEqual(null);
+		});
+	});
+
+	test("Definition Redeclare Definition", async () => {
+		const content = "Foo=Bar\nFoo='Bar'\nBar=Fo|o";
+		await testDefinition(content, (document, result) => {
+			expect(result).toEqual([
+				{
+					range: createRange(document, 0, 3),
+					uri,
+				},
+				{
+					range: createRange(document, 8, 3),
+					uri,
+				},
+			]);
+		});
+	});
+});
