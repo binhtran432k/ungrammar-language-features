@@ -11,11 +11,14 @@ export { TextDocument } from "vscode-languageserver-textdocument";
 export {
 	CompletionItem,
 	CompletionItemKind,
+	CompletionItemLabelDetails,
 	CompletionList,
 	Diagnostic,
 	DiagnosticSeverity,
+	MarkupContent,
 	Position,
 	Range,
+	TextEdit,
 } from "vscode-languageserver-types";
 
 export interface LanguageService {
