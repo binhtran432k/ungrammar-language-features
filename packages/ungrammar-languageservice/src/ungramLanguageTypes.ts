@@ -2,6 +2,7 @@ import type { TextDocument } from "vscode-languageserver-textdocument";
 import type {
 	CompletionList,
 	Diagnostic,
+	Hover,
 	Position,
 	Range,
 } from "vscode-languageserver-types";
@@ -15,6 +16,9 @@ export {
 	CompletionList,
 	Diagnostic,
 	DiagnosticSeverity,
+	Hover,
+	MarkedString,
+	MarkupKind,
 	MarkupContent,
 	Position,
 	Range,
@@ -35,6 +39,11 @@ export interface LanguageService {
 		ungramDocument: UngramDocument,
 		position: Position,
 	): PromiseLike<CompletionList | null>;
+	doHover(
+		document: TextDocument,
+		ungramDocument: UngramDocument,
+		position: Position,
+	): PromiseLike<Hover | null>;
 }
 
 export interface LanguageServiceParams {

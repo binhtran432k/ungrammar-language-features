@@ -103,6 +103,7 @@ export function startServer(
 			completionProvider: {
 				resolveProvider: false,
 			},
+			hoverProvider: true,
 			diagnosticProvider: {
 				documentSelector: null,
 				interFileDependencies: false,
@@ -145,6 +146,29 @@ export function startServer(
 			},
 			null,
 			`Error while computing completions for ${textDocumentPosition.textDocument.uri}`,
+			token,
+		);
+	});
+
+	connection.onHover((textDocumentPositionParams, token) => {
+		return runSafeAsync(
+			runtime,
+			async () => {
+				const document = documents.get(
+					textDocumentPositionParams.textDocument.uri,
+				);
+				if (document) {
+					const ungramDocument = getUngramDocument(state, document);
+					return languageService.doHover(
+						document,
+						ungramDocument,
+						textDocumentPositionParams.position,
+					);
+				}
+				return null;
+			},
+			null,
+			`Error while computing hover for ${textDocumentPositionParams.textDocument.uri}`,
 			token,
 		);
 	});

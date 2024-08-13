@@ -9,8 +9,8 @@ import {
 	type Repetition,
 	type Rule,
 	type Token,
-} from "../src/ast/generated.js";
-import { UngramDocument } from "../src/ast/ungramDocument.js";
+	UngramDocument,
+} from "../src/ungramLanguageService.js";
 
 export async function main() {
 	const ungramFile = Bun.file("src/ast/ungrammar.ungram");
@@ -340,7 +340,7 @@ class PropertyVisitor extends AstVisitor {
 	}
 
 	override visitIdentifier(acceptor: Identifier): void {
-		const [name] = UngramDocument.getNodeText(
+		const [name] = UngramDocument.getNodeData(
 			acceptor.syntax,
 			this.textDocument,
 		);
@@ -352,7 +352,7 @@ class PropertyVisitor extends AstVisitor {
 	}
 
 	override visitToken(acceptor: Token): void {
-		const [tokenValue] = UngramDocument.getNodeText(
+		const [tokenValue] = UngramDocument.getNodeData(
 			acceptor.syntax,
 			this.textDocument,
 		);
