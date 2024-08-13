@@ -104,6 +104,7 @@ export function startServer(
 				resolveProvider: false,
 			},
 			hoverProvider: true,
+			definitionProvider: true,
 			diagnosticProvider: {
 				documentSelector: null,
 				interFileDependencies: false,
@@ -169,6 +170,27 @@ export function startServer(
 			},
 			null,
 			`Error while computing hover for ${textDocumentPositionParams.textDocument.uri}`,
+			token,
+		);
+	});
+
+	connection.onDefinition((definitionParams, token) => {
+		return runSafeAsync(
+			runtime,
+			async () => {
+				const document = documents.get(definitionParams.textDocument.uri);
+				if (document) {
+					const ungramDocument = getUngramDocument(state, document);
+					return languageService.doDefinition(
+						document,
+						ungramDocument,
+						definitionParams.position,
+					);
+				}
+				return null;
+			},
+			null,
+			`Error while computing definition for ${definitionParams.textDocument.uri}`,
 			token,
 		);
 	});
