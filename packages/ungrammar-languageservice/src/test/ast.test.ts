@@ -1,11 +1,11 @@
 import { describe, expect, test } from "bun:test";
-import { UngramDocument } from "../ast/ungramDocument.js";
-import { getLanguageService } from "../ungramLanguageService.js";
 import {
 	ErrorCode,
 	type IProblem,
 	TextDocument,
-} from "../ungramLanguageTypes.js";
+	UngramDocument,
+	getLanguageService,
+} from "../ungramLanguageService.js";
 
 describe("Ungrammar AST", () => {
 	function isValid(ungram: string): void {

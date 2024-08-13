@@ -15,6 +15,8 @@ import {
 	type Token,
 } from "./generated.js";
 
+export * from "./generated.js";
+
 export interface UngramDocument {
 	tree: Tree;
 	grammar: Grammar;
@@ -93,7 +95,7 @@ export namespace UngramDocument {
 		);
 	}
 
-	export function getNodeText(
+	export function getNodeData(
 		nodeRef: SyntaxNodeRef,
 		textDocument: TextDocument,
 	): [string, Range] {
@@ -108,7 +110,7 @@ export namespace UngramDocument {
 	): string | undefined {
 		const node = ungramDocument.tree.resolve(offset);
 		if (node.parent && node.matchContext(["Node"])) {
-			const [nodeData] = getNodeText(node.parent, document);
+			const [nodeData] = getNodeData(node.parent, document);
 			return nodeData;
 		}
 	}
@@ -126,21 +128,25 @@ export namespace UngramDocument {
 			.join("\n");
 	}
 
-	export function isInComment(
+	export function getNodeByOffset(
 		ungramDocument: UngramDocument,
 		offset: number,
-	): boolean {
-		const node = ungramDocument.tree.resolve(offset);
-		return node.type.is("Comment") || node.matchContext(["Comment"]);
+	) {
+		return ungramDocument.tree.resolve(offset, 1);
 	}
 
-	export function isInToken(
-		ungramDocument: UngramDocument,
-		offset: number,
-	): boolean {
-		const node = ungramDocument.tree.resolve(offset);
-		return node.type.is("Token") || node.matchContext(["Token"]);
-	}
+	export const isInComment = isInNodeByName.bind(null, "Comment");
+	export const isInToken = isInNodeByName.bind(null, "Token");
+	export const isInIdentifier = isInNodeByName.bind(null, "Identifier");
+}
+
+function isInNodeByName(
+	nodeName: string,
+	ungramDocument: UngramDocument,
+	offset: number,
+): boolean {
+	const node = UngramDocument.getNodeByOffset(ungramDocument, offset);
+	return node.type.is(nodeName) || node.matchContext([nodeName]);
 }
 
 function parseTree(
@@ -206,7 +212,7 @@ function getUndefinedIdentifierProblems(
 ): IProblem[] {
 	const problems: IProblem[] = [];
 	for (const ident of ungramDocument.identifiers) {
-		const [name, range] = UngramDocument.getNodeText(ident, document);
+		const [name, range] = UngramDocument.getNodeData(ident, document);
 		if (!ungramDocument.definitionMap.get(name)) {
 			problems.push({
 				code: ErrorCode.UndefinedIdentifier,
@@ -272,7 +278,7 @@ export class IdentifierVisitor extends AstVisitor {
 
 	override visitIdentifier(acceptor: Identifier): void {
 		if (acceptor.syntax.matchContext(["Node"])) {
-			const [name] = UngramDocument.getNodeText(
+			const [name] = UngramDocument.getNodeData(
 				acceptor.syntax,
 				this.textDocument,
 			);

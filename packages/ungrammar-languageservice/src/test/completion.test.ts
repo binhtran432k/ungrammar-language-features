@@ -1,5 +1,4 @@
 import { describe, expect, test } from "bun:test";
-import { getLanguageService } from "../ungramLanguageService.js";
 import {
 	CompletionItemKind,
 	type CompletionItemLabelDetails,
@@ -7,7 +6,9 @@ import {
 	type MarkupContent,
 	TextDocument,
 	TextEdit,
-} from "../ungramLanguageTypes.js";
+	getLanguageService,
+} from "../ungramLanguageService.js";
+import { parseCursorMark } from "./utils.js";
 
 interface ItemDescription {
 	label: string;
@@ -62,12 +63,6 @@ function assertCompletion(
 	if (expected.sortText !== undefined) {
 		expect(match.sortText).toBe(expected.sortText);
 	}
-}
-
-function parseCursorMark(text: string): [number, string] {
-	const offset = text.search(/\|(?!\|)/);
-	const value = text.slice(0, offset) + text.slice(offset + 1);
-	return [offset, value];
 }
 
 describe("Ungrammar Completion", () => {
