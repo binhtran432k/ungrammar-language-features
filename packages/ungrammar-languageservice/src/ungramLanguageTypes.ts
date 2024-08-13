@@ -4,6 +4,7 @@ import type {
 	Definition,
 	Diagnostic,
 	Hover,
+	Location,
 	Position,
 	Range,
 } from "vscode-languageserver-types";
@@ -15,7 +16,6 @@ export {
 	CompletionItemKind,
 	CompletionItemLabelDetails,
 	CompletionList,
-	type Definition,
 	Diagnostic,
 	DiagnosticSeverity,
 	Hover,
@@ -25,6 +25,8 @@ export {
 	Position,
 	Range,
 	TextEdit,
+	type Definition,
+	type Location,
 } from "vscode-languageserver-types";
 
 export interface LanguageService {
@@ -51,6 +53,11 @@ export interface LanguageService {
 		ungramDocument: UngramDocument,
 		position: Position,
 	): PromiseLike<Definition | null>;
+	doReferences(
+		document: TextDocument,
+		ungramDocument: UngramDocument,
+		position: Position,
+	): PromiseLike<Location[] | null>;
 }
 
 export interface LanguageServiceParams {

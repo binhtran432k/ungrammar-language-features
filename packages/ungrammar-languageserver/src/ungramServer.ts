@@ -105,6 +105,7 @@ export function startServer(
 			},
 			hoverProvider: true,
 			definitionProvider: true,
+			referencesProvider: true,
 			diagnosticProvider: {
 				documentSelector: null,
 				interFileDependencies: false,
@@ -130,8 +131,8 @@ export function startServer(
 		state.ungramDocumentCache.dispose();
 	});
 
-	connection.onCompletion((textDocumentPosition, token) => {
-		return runSafeAsync(
+	connection.onCompletion((textDocumentPosition, token) =>
+		runSafeAsync(
 			runtime,
 			async () => {
 				const document = documents.get(textDocumentPosition.textDocument.uri);
@@ -148,11 +149,11 @@ export function startServer(
 			null,
 			`Error while computing completions for ${textDocumentPosition.textDocument.uri}`,
 			token,
-		);
-	});
+		),
+	);
 
-	connection.onHover((textDocumentPositionParams, token) => {
-		return runSafeAsync(
+	connection.onHover((textDocumentPositionParams, token) =>
+		runSafeAsync(
 			runtime,
 			async () => {
 				const document = documents.get(
@@ -171,11 +172,11 @@ export function startServer(
 			null,
 			`Error while computing hover for ${textDocumentPositionParams.textDocument.uri}`,
 			token,
-		);
-	});
+		),
+	);
 
-	connection.onDefinition((definitionParams, token) => {
-		return runSafeAsync(
+	connection.onDefinition((definitionParams, token) =>
+		runSafeAsync(
 			runtime,
 			async () => {
 				const document = documents.get(definitionParams.textDocument.uri);
@@ -192,8 +193,29 @@ export function startServer(
 			null,
 			`Error while computing definition for ${definitionParams.textDocument.uri}`,
 			token,
-		);
-	});
+		),
+	);
+
+	connection.onReferences((referenceParams, token) =>
+		runSafeAsync(
+			runtime,
+			async () => {
+				const document = documents.get(referenceParams.textDocument.uri);
+				if (document) {
+					const ungramDocument = getUngramDocument(state, document);
+					return languageService.doReferences(
+						document,
+						ungramDocument,
+						referenceParams.position,
+					);
+				}
+				return null;
+			},
+			null,
+			`Error while computing references for ${referenceParams.textDocument.uri}`,
+			token,
+		),
+	);
 
 	// Listen on the connection
 	connection.listen();
