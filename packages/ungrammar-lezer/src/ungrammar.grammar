@@ -50,7 +50,7 @@ Label {
   tokenEnd { "'" }
   escape { "\\" $['\\] }
   InvalidEscape { "\\" !['\\] }
-  Unclosed { $[\r\n] | @eof }
+  Unclosed { eol }
   @else tokenContent
 }
 @skip {} {
@@ -63,7 +63,8 @@ Label {
   whitespace { $[ \n\t] }
   WhitespaceR { $[\r] }
 
-  Comment { "//" ![\r\n]* }
+  eol { $[\r\n] | @eof }
+  Comment { "//" ![\r\n]* eol }
 }
 
 @skip { whitespace | WhitespaceR | Comment }
