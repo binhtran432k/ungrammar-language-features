@@ -7,12 +7,11 @@ import {
 import { createRange, parseCursorMark } from "./utils.js";
 
 describe("Ungrammar References", () => {
-	const uri = "test://test.ungram";
-
 	async function testReferences(
 		originValue: string,
 		test: (document: TextDocument, definition: Location[] | null) => void,
 	) {
+		const uri = "test://test.ungram";
 		const [offset, value] = parseCursorMark(originValue);
 
 		const service = getLanguageService({});
@@ -35,7 +34,7 @@ describe("Ungrammar References", () => {
 			expect(result).toEqual([
 				{
 					range: createRange(document, 0, 3),
-					uri,
+					uri: document.uri,
 				},
 			]);
 		});
@@ -47,7 +46,7 @@ describe("Ungrammar References", () => {
 			expect(result).toEqual([
 				{
 					range: createRange(document, 0, 3),
-					uri,
+					uri: document.uri,
 				},
 			]);
 		});
@@ -59,11 +58,11 @@ describe("Ungrammar References", () => {
 			expect(result).toEqual([
 				{
 					range: createRange(document, 9, 4),
-					uri,
+					uri: document.uri,
 				},
 				{
 					range: createRange(document, 4, 4),
-					uri,
+					uri: document.uri,
 				},
 			]);
 		});
@@ -89,7 +88,7 @@ describe("Ungrammar References", () => {
 			expect(result).toEqual([
 				{
 					range: createRange(document, 12, 3),
-					uri,
+					uri: document.uri,
 				},
 			]);
 		});
@@ -101,11 +100,11 @@ describe("Ungrammar References", () => {
 			expect(result).toEqual([
 				{
 					range: createRange(document, 12, 3),
-					uri,
+					uri: document.uri,
 				},
 				{
 					range: createRange(document, 16, 3),
-					uri,
+					uri: document.uri,
 				},
 			]);
 		});
@@ -117,15 +116,15 @@ describe("Ungrammar References", () => {
 			expect(result).toEqual([
 				{
 					range: createRange(document, 0, 3),
-					uri,
+					uri: document.uri,
 				},
 				{
 					range: createRange(document, 8, 3),
-					uri,
+					uri: document.uri,
 				},
 				{
 					range: createRange(document, 22, 3),
-					uri,
+					uri: document.uri,
 				},
 			]);
 		});

@@ -106,6 +106,7 @@ export function startServer(
 			hoverProvider: true,
 			definitionProvider: true,
 			referencesProvider: true,
+			renameProvider: true,
 			diagnosticProvider: {
 				documentSelector: null,
 				interFileDependencies: false,
@@ -213,6 +214,28 @@ export function startServer(
 			},
 			null,
 			`Error while computing references for ${referenceParams.textDocument.uri}`,
+			token,
+		),
+	);
+
+	connection.onRenameRequest((renameParams, token) =>
+		runSafeAsync(
+			runtime,
+			async () => {
+				const document = documents.get(renameParams.textDocument.uri);
+				if (document) {
+					const ungramDocument = getUngramDocument(state, document);
+					return languageService.doRename(
+						document,
+						ungramDocument,
+						renameParams.position,
+						renameParams.newName,
+					);
+				}
+				return null;
+			},
+			null,
+			`Error while computing rename for ${renameParams.textDocument.uri}`,
 			token,
 		),
 	);

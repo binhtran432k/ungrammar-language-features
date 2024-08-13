@@ -3,6 +3,7 @@ import { UngramCompletion } from "./services/ungramCompletion.js";
 import { UngramDefinition } from "./services/ungramDefinition.js";
 import { UngramHover } from "./services/ungramHover.js";
 import { UngramReference } from "./services/ungramReference.js";
+import { UngramRename } from "./services/ungramRename.js";
 import { UngramValidation } from "./services/ungramValidation.js";
 import type {
 	LanguageService,
@@ -34,5 +35,6 @@ export function getLanguageService(
 		doComplete: UngramCompletion.doComplete.bind(null, state),
 		doDefinition: UngramDefinition.doDefinition.bind(null, state),
 		doReferences: UngramReference.doReferences.bind(null, state),
+		doRename: UngramRename.doRename.bind(null, state),
 	};
 }

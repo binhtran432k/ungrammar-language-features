@@ -5,6 +5,7 @@ import {
 	DiagnosticSeverity,
 	ErrorCode,
 	type IProblem,
+	type Location,
 	Range,
 	type TextDocument,
 } from "../ungramLanguageTypes.js";
@@ -85,22 +86,36 @@ export namespace UngramDocument {
 		];
 	}
 
-	export function getNodeRange(
-		nodeRef: SyntaxNodeRef,
-		textDocument: TextDocument,
-	) {
+	export function getReferences(
+		document: TextDocument,
+		ungramDocument: UngramDocument,
+		nodeName: string,
+	): Location[] {
+		const defs =
+			ungramDocument.definitionMap.get(nodeName)?.map((node) => ({
+				range: UngramDocument.getNodeRange(node, document),
+				uri: document.uri,
+			})) ?? [];
+		const idents = ungramDocument.identifiers
+			.map((node) => UngramDocument.getNodeData(node, document))
+			.filter(([identName]) => identName === nodeName)
+			.map(([, range]) => ({ range, uri: document.uri }));
+		return [...defs, ...idents];
+	}
+
+	export function getNodeRange(nodeRef: SyntaxNodeRef, document: TextDocument) {
 		return Range.create(
-			textDocument.positionAt(nodeRef.from),
-			textDocument.positionAt(nodeRef.to),
+			document.positionAt(nodeRef.from),
+			document.positionAt(nodeRef.to),
 		);
 	}
 
 	export function getNodeData(
 		nodeRef: SyntaxNodeRef,
-		textDocument: TextDocument,
+		document: TextDocument,
 	): [string, Range] {
-		const range = getNodeRange(nodeRef, textDocument);
-		return [textDocument.getText(range), range];
+		const range = getNodeRange(nodeRef, document);
+		return [document.getText(range), range];
 	}
 
 	export function resolveNodeText(

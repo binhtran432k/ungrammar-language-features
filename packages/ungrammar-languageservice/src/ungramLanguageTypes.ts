@@ -7,6 +7,7 @@ import type {
 	Location,
 	Position,
 	Range,
+	WorkspaceEdit,
 } from "vscode-languageserver-types";
 import type { UngramDocument } from "./ast/ungramDocument.js";
 
@@ -25,6 +26,7 @@ export {
 	Position,
 	Range,
 	TextEdit,
+	WorkspaceEdit,
 	type Definition,
 	type Location,
 } from "vscode-languageserver-types";
@@ -58,6 +60,12 @@ export interface LanguageService {
 		ungramDocument: UngramDocument,
 		position: Position,
 	): PromiseLike<Location[] | null>;
+	doRename(
+		document: TextDocument,
+		ungramDocument: UngramDocument,
+		position: Position,
+		newName: string,
+	): PromiseLike<WorkspaceEdit | null>;
 }
 
 export interface LanguageServiceParams {
