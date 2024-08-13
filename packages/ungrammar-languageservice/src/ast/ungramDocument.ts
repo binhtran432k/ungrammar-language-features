@@ -164,8 +164,10 @@ function getSyntaxProblems(
 				code = ErrorCode.InvalidEscape;
 			} else if (unknown.type.is("WhitespaceR")) {
 				code = ErrorCode.UnexpectedWhitespaceR;
-			} else if (unknown.type.is("Unclosed")) {
+			} else if (unknown.type.is("UnclosedToken")) {
 				code = ErrorCode.EndOfTokenExpected;
+			} else if (unknown.type.is("UnclosedGroup")) {
+				code = ErrorCode.EndOfGroupExpected;
 			} else if (unknown.from === unknown.to) {
 				if (unknown.node.parent?.type.is("Node")) {
 					code = ErrorCode.NodeChildExpected;
@@ -236,6 +238,8 @@ function parseErrorMessage(document: TextDocument, problem: IProblem): string {
 		}
 		case ErrorCode.EndOfTokenExpected:
 			return "Expected an end of token `'`.";
+		case ErrorCode.EndOfGroupExpected:
+			return "Expected an end of group `)`.";
 		case ErrorCode.NodeChildExpected:
 			return "Missing something. Maybe `Identifier`, `=`, or `Rule`";
 		case ErrorCode.Missing:

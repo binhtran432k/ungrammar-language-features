@@ -39,5 +39,5 @@ Bar = Goo
 ==>
 
 Grammar(
-  Node(Identifier, Rule(Token(Unclosed))),
+  Node(Identifier, Rule(Token(UnclosedToken))),
   Node(Identifier, Rule(Identifier)))

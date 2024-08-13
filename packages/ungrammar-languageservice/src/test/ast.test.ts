@@ -55,6 +55,10 @@ describe("Ungrammar AST", () => {
 		isInvalid("Foo='Bar", ErrorCode.EndOfTokenExpected);
 	});
 
+	test("End group ) expected", () => {
+		isInvalid("Foo=('Bar'", ErrorCode.EndOfGroupExpected);
+	});
+
 	test("Node child expected", () => {
 		isInvalid("Foo", ErrorCode.NodeChildExpected);
 		isInvalid("='Foo'", ErrorCode.NodeChildExpected);

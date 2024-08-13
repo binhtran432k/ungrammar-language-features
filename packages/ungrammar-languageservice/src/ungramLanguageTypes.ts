@@ -55,12 +55,13 @@ export interface IProblem {
 }
 
 export enum ErrorCode {
-	InvalidEscape = 0,
+	Unexpected = 0,
 	UnexpectedWhitespaceR = 1,
-	EndOfTokenExpected = 2,
-	NodeChildExpected = 3,
-	Missing = 4,
-	Unexpected = 5,
-	RedeclaredDefinition = 6,
-	UndefinedIdentifier = 7,
+	InvalidEscape = 2,
+	Missing = 100,
+	NodeChildExpected = 101,
+	EndOfTokenExpected = 102,
+	EndOfGroupExpected = 103,
+	RedeclaredDefinition = 200,
+	UndefinedIdentifier = 201,
 }

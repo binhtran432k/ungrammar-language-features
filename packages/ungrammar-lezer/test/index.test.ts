@@ -1,5 +1,4 @@
-import { describe, it } from "bun:test";
-import assert from "node:assert";
+import { describe, expect, test } from "bun:test";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileTests } from "@lezer/generator/dist/test";
@@ -13,22 +12,21 @@ for (const file of fs.readdirSync(caseDir)) {
 
 	// @ts-expect-error name always has value
 	const name = /^[^\.]*/.exec(file)[0];
-	describe(name, () => {
+	describe(`Ungrammar Lezer ${name}`, () => {
 		for (const { name, text, expected } of fileTests(
 			fs.readFileSync(path.join(caseDir, file), "utf8"),
 			file,
 		))
-			it(name, () => {
-				assert.equal(parser.parse(text).toString(), normalize(expected));
+			test(name, () => {
+				expect(parser.parse(text).toString()).toBe(normalize(expected));
 			});
 	});
 }
 
 // Test testcase that is unwritable
-describe("unwritable", () => {
-	it("Unexpected \\r", () => {
-		assert.equal(
-			parser.parse("Foo=Bar\r\n").toString(),
+describe("Ungrammar Lezer unwritable", () => {
+	test("Unexpected \\r", () => {
+		expect(parser.parse("Foo=Bar\r\n").toString()).toBe(
 			normalize("Grammar(Node(Identifier,Rule(Identifier)),WhitespaceR)"),
 		);
 	});
