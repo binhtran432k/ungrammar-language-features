@@ -40,7 +40,7 @@ export namespace UngramDocument {
 			tree,
 			fragments,
 			grammar,
-			unknowns,
+			unknowns: filterSkipNode(unknowns),
 			definitionMap: identifierVisitor.definitionMap,
 			identifiers: identifierVisitor.identifiers,
 		};
@@ -53,11 +53,9 @@ export namespace UngramDocument {
 		const [tree, fragments] = parseTree(document, ungramDocument.fragments);
 		ungramDocument.tree = tree;
 		ungramDocument.fragments = fragments;
-		ungramDocument.unknowns = [];
-		ungramDocument.grammar = new Grammar(
-			tree.cursor(),
-			ungramDocument.unknowns,
-		);
+		const unknowns: SyntaxNodeRef[] = [];
+		ungramDocument.grammar = new Grammar(tree.cursor(), unknowns);
+		ungramDocument.unknowns = filterSkipNode(unknowns);
 
 		const identifierVisitor = new IdentifierVisitor(document);
 		ungramDocument.grammar.accept(identifierVisitor);
@@ -173,34 +171,38 @@ function parseTree(
 	return [tree, newFragments];
 }
 
+function filterSkipNode(nodes: SyntaxNodeRef[]): SyntaxNodeRef[] {
+	return nodes.filter((n) => !n.type.is("Comment"));
+}
+
 function getSyntaxProblems(
 	document: TextDocument,
 	ungramDocument: UngramDocument,
 ): IProblem[] {
-	return ungramDocument.unknowns
-		.filter((n) => !n.type.is("Comment"))
-		.map((unknown) => {
-			let code: ErrorCode = ErrorCode.Unexpected;
-			if (unknown.type.is("InvalidEscape")) {
-				code = ErrorCode.InvalidEscape;
-			} else if (unknown.type.is("WhitespaceR")) {
-				code = ErrorCode.UnexpectedWhitespaceR;
-			} else if (unknown.type.is("UnclosedToken")) {
-				code = ErrorCode.EndOfTokenExpected;
-			} else if (unknown.type.is("UnclosedGroup")) {
-				code = ErrorCode.EndOfGroupExpected;
-			} else if (unknown.from === unknown.to) {
-				if (unknown.node.parent?.type.is("Node")) {
-					code = ErrorCode.NodeChildExpected;
-				} else {
-					code = ErrorCode.Missing;
-				}
+	return ungramDocument.unknowns.map((unknown) => {
+		let code: ErrorCode = ErrorCode.Unexpected;
+		if (unknown.type.is("InvalidEscape")) {
+			code = ErrorCode.InvalidEscape;
+		} else if (unknown.type.is("WhitespaceR")) {
+			code = ErrorCode.UnexpectedWhitespaceR;
+		} else if (unknown.type.is("UnclosedToken")) {
+			code = ErrorCode.EndOfTokenExpected;
+		} else if (unknown.type.is("UnclosedGroup")) {
+			code = ErrorCode.EndOfGroupExpected;
+		} else if (unknown.from === unknown.to) {
+			if (unknown.node.matchContext(["Node"])) {
+				code = ErrorCode.NodeChildExpected;
+			} else if (unknown.node.matchContext(["Node", "Identifier"])) {
+				code = ErrorCode.DefinitionExpected;
+			} else {
+				code = ErrorCode.Missing;
 			}
-			return {
-				code,
-				range: UngramDocument.getNodeRange(unknown, document),
-			};
-		});
+		}
+		return {
+			code,
+			range: UngramDocument.getNodeRange(unknown, document),
+		};
+	});
 }
 
 function getRedeclareDefinitionProblems(
@@ -261,14 +263,16 @@ function parseErrorMessage(document: TextDocument, problem: IProblem): string {
 			return "Expected an end of token `'`.";
 		case ErrorCode.EndOfGroupExpected:
 			return "Expected an end of group `)`.";
+		case ErrorCode.DefinitionExpected:
+			return "Expected an Definition";
 		case ErrorCode.NodeChildExpected:
-			return "Missing something. Maybe `Identifier`, `=`, or `Rule`";
+			return "Missing something. Maybe Identifier, `=`, or Rule";
 		case ErrorCode.Missing:
 			return "Missing something.";
 		case ErrorCode.Unexpected:
 			return `Unexpected \`${document.getText(problem.range)}\``;
 		case ErrorCode.RedeclaredDefinition:
-			return `Cannot redeclare node '${document.getText(problem.range)}'.`;
+			return `Cannot redeclare '${document.getText(problem.range)}'.`;
 		case ErrorCode.UndefinedIdentifier:
 			return `Cannot find name '${document.getText(problem.range)}'.`;
 		default:

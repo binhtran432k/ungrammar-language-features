@@ -59,9 +59,20 @@ describe("Ungrammar AST", () => {
 		isInvalid("Foo=('Bar'", ErrorCode.EndOfGroupExpected);
 	});
 
+	test("Definition expected", () => {
+		isInvalid("='Foo'", ErrorCode.DefinitionExpected);
+	});
+
 	test("Node child expected", () => {
-		isInvalid("Foo", ErrorCode.NodeChildExpected);
-		isInvalid("='Foo'", ErrorCode.NodeChildExpected);
+		isInvalid("Foo=", ErrorCode.NodeChildExpected);
+	});
+
+	test("Unexpected Identifier with digit or dash", () => {
+		isInvalid(
+			"Foo=Bar2Boo\nBar2Boo='Bar'",
+			ErrorCode.Unexpected,
+			ErrorCode.Unexpected,
+		);
 	});
 
 	test("Unexpected", () => {
@@ -80,13 +91,35 @@ describe("Ungrammar AST", () => {
 		isInvalid("Foo=Bar", ErrorCode.UndefinedIdentifier);
 	});
 
-	test("Valid", () => {
+	test("Valid Node", () => {
+		isValid("Foo=Bar\nBar='Boo'");
+	});
+
+	test("Valid Token", () => {
 		isValid("Foo='Bar'");
+	});
+
+	test("Valid Optional", () => {
 		isValid("Foo='Bar'?");
+	});
+
+	test("Valid Repeat", () => {
 		isValid("Foo='Bar'*");
+	});
+
+	test("Valid Label", () => {
 		isValid("Foo=lab:'Bar'");
+	});
+
+	test("Valid Group", () => {
 		isValid("Foo=('Bar')");
+	});
+
+	test("Valid Alternative", () => {
 		isValid("Foo='Bar'|'Boo'");
+	});
+
+	test("Valid Comment", () => {
 		isValid("// Foo Bar");
 	});
 });
