@@ -11,6 +11,7 @@ import type {
 	Location,
 	Position,
 	Range,
+	SelectionRange,
 	WorkspaceEdit,
 } from "vscode-languageserver-types";
 import type { UngramDocument } from "./ast/ungramDocument.js";
@@ -33,6 +34,7 @@ export {
 	MarkupKind,
 	Position,
 	Range,
+	SelectionRange,
 	TextEdit,
 	WorkspaceEdit,
 	type Definition,
@@ -84,6 +86,10 @@ export interface LanguageService {
 		document: TextDocument,
 		ungramDocument: UngramDocument,
 	): FoldingRange[];
+	getSelectionRanges(
+		document: TextDocument,
+		ungramDocument: UngramDocument,
+	): SelectionRange[];
 }
 
 export interface LanguageServiceParams {
