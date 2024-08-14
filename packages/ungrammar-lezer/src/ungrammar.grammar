@@ -1,6 +1,6 @@
 @precedence { seq @left, label }
 
-@top Grammar { Node* }
+@top Grammar { endOfNode Node* }
 
 Node {
   Identifier
@@ -57,8 +57,10 @@ Label {
   Token { "'" (tokenContent | escape | InvalidEscape)* (tokenEnd | UnclosedToken) }
 }
 
+Identifier { identifier }
+
 @tokens {
-  Identifier { $[a-zA-Z_]+ }
+  identifier { $[a-zA-Z_]+ }
 
   whitespace { $[ \n\t] }
   WhitespaceR { $[\r] }

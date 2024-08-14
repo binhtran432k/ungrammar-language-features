@@ -93,6 +93,7 @@ export enum ErrorCode {
 	NodeChildExpected = 101,
 	EndOfTokenExpected = 102,
 	EndOfGroupExpected = 103,
+	DefinitionExpected = 104,
 	RedeclaredDefinition = 200,
 	UndefinedIdentifier = 201,
 }

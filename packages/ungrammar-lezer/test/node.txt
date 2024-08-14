@@ -32,7 +32,7 @@ Grammar(
 
 Grammar(
   Node(
-    @error,
+    Identifier(@error),
     Rule(Identifier)))
 
 
@@ -42,11 +42,7 @@ Program Foo
 
 ==>
 
-Grammar(
-  Node(
-    Identifier,
-    @error,
-    Rule(Identifier)))
+Grammar(@error, @error)
 
 # Invalid node - Missing body
 

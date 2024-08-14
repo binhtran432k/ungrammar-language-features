@@ -21,7 +21,4 @@ Program
 
 ==>
 
-Grammar(
-  Node(
-    Identifier,
-    @error))
+Grammar(@error)
