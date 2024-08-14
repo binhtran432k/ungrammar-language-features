@@ -1,5 +1,6 @@
 import { UngramDocument } from "./ast/ungramDocument.js";
 import { UngramCodeAction } from "./services/ungramCodeAction.js";
+import { UngramCodeLens } from "./services/ungramCodeLens.js";
 import { UngramCompletion } from "./services/ungramCompletion.js";
 import { UngramDefinition } from "./services/ungramDefinition.js";
 import { UngramFolding } from "./services/ungramFolding.js";
@@ -42,5 +43,6 @@ export function getLanguageService(
 		doCodeAction: UngramCodeAction.doCodeAction.bind(null, state),
 		getFoldingRanges: UngramFolding.getFoldingRanges,
 		getSelectionRanges: UngramSelection.getSelectionRanges,
+		getCodeLens: UngramCodeLens.getCodeLens,
 	};
 }

@@ -2,6 +2,7 @@ import type { TextDocument } from "vscode-languageserver-textdocument";
 import type {
 	CodeAction,
 	CodeActionContext,
+	CodeLens,
 	Command,
 	CompletionList,
 	Definition,
@@ -25,6 +26,7 @@ export {
 	CompletionItemKind,
 	CompletionItemLabelDetails,
 	CompletionList,
+	CodeLens,
 	Diagnostic,
 	DiagnosticSeverity,
 	FoldingRange,
@@ -90,6 +92,10 @@ export interface LanguageService {
 		document: TextDocument,
 		ungramDocument: UngramDocument,
 	): SelectionRange[];
+	getCodeLens(
+		document: TextDocument,
+		ungramDocument: UngramDocument,
+	): CodeLens[];
 }
 
 export interface LanguageServiceParams {

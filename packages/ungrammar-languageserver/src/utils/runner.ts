@@ -45,7 +45,7 @@ export function runSafeAsync<T, E = void>(
 	});
 }
 
-export function runSafe<T, E>(
+export function runSafe<T, E = void>(
 	runtime: RuntimeEnvironment,
 	func: () => T,
 	errorVal: T,
