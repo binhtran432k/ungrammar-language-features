@@ -2,6 +2,7 @@ import { UngramDocument } from "./ast/ungramDocument.js";
 import { UngramCodeAction } from "./services/ungramCodeAction.js";
 import { UngramCompletion } from "./services/ungramCompletion.js";
 import { UngramDefinition } from "./services/ungramDefinition.js";
+import { UngramFolding } from "./services/ungramFolding.js";
 import { UngramHover } from "./services/ungramHover.js";
 import { UngramReference } from "./services/ungramReference.js";
 import { UngramRename } from "./services/ungramRename.js";
@@ -38,5 +39,6 @@ export function getLanguageService(
 		doReferences: UngramReference.doReferences.bind(null, state),
 		doRename: UngramRename.doRename.bind(null, state),
 		doCodeAction: UngramCodeAction.doCodeAction.bind(null, state),
+		getFoldingRanges: UngramFolding.getFoldingRanges,
 	};
 }
