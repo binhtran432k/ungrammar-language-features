@@ -6,6 +6,7 @@ import { UngramFolding } from "./services/ungramFolding.js";
 import { UngramHover } from "./services/ungramHover.js";
 import { UngramReference } from "./services/ungramReference.js";
 import { UngramRename } from "./services/ungramRename.js";
+import { UngramSelection } from "./services/ungramSelection.js";
 import { UngramValidation } from "./services/ungramValidation.js";
 import type {
 	LanguageService,
@@ -40,5 +41,6 @@ export function getLanguageService(
 		doRename: UngramRename.doRename.bind(null, state),
 		doCodeAction: UngramCodeAction.doCodeAction.bind(null, state),
 		getFoldingRanges: UngramFolding.getFoldingRanges,
+		getSelectionRanges: UngramSelection.getSelectionRanges,
 	};
 }

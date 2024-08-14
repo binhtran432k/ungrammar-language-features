@@ -109,6 +109,7 @@ export function startServer(
 			renameProvider: true,
 			codeActionProvider: true,
 			foldingRangeProvider: true,
+			selectionRangeProvider: true,
 			diagnosticProvider: {
 				documentSelector: null,
 				interFileDependencies: false,
@@ -277,6 +278,23 @@ export function startServer(
 			},
 			null,
 			`Error while computing folding ranges for ${foldingRangeParams.textDocument.uri}`,
+			token,
+		),
+	);
+
+	connection.onSelectionRanges((selectionRangeParams, token) =>
+		runSafeAsync(
+			runtime,
+			async () => {
+				const document = documents.get(selectionRangeParams.textDocument.uri);
+				if (document) {
+					const ungramDocument = getUngramDocument(state, document);
+					return languageService.getSelectionRanges(document, ungramDocument);
+				}
+				return null;
+			},
+			null,
+			`Error while computing selection ranges for ${selectionRangeParams.textDocument.uri}`,
 			token,
 		),
 	);
