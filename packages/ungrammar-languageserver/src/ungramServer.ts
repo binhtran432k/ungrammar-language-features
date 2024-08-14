@@ -107,6 +107,7 @@ export function startServer(
 			definitionProvider: true,
 			referencesProvider: true,
 			renameProvider: true,
+			codeActionProvider: true,
 			diagnosticProvider: {
 				documentSelector: null,
 				interFileDependencies: false,
@@ -236,6 +237,28 @@ export function startServer(
 			},
 			null,
 			`Error while computing rename for ${renameParams.textDocument.uri}`,
+			token,
+		),
+	);
+
+	connection.onCodeAction((codeActionParams, token) =>
+		runSafeAsync(
+			runtime,
+			async () => {
+				const document = documents.get(codeActionParams.textDocument.uri);
+				if (document) {
+					const ungramDocument = getUngramDocument(state, document);
+					return languageService.doCodeAction(
+						document,
+						ungramDocument,
+						codeActionParams.range,
+						codeActionParams.context,
+					);
+				}
+				return null;
+			},
+			null,
+			`Error while computing code action for ${codeActionParams.textDocument.uri}`,
 			token,
 		),
 	);
