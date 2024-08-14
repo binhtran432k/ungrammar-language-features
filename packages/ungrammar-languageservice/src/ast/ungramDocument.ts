@@ -25,7 +25,7 @@ export interface UngramDocument {
 	unknowns: SyntaxNodeRef[];
 	fragments: readonly TreeFragment[];
 	definitionMap: Map<string, SyntaxNodeRef[]>;
-	identifiers: SyntaxNodeRef[];
+	identifierMap: Map<string, SyntaxNodeRef[]>;
 }
 
 export namespace UngramDocument {
@@ -43,7 +43,7 @@ export namespace UngramDocument {
 			grammar,
 			unknowns: filterSkipNode(unknowns),
 			definitionMap: identifierVisitor.definitionMap,
-			identifiers: identifierVisitor.identifiers,
+			identifierMap: identifierVisitor.identifierMap,
 		};
 	}
 
@@ -62,7 +62,7 @@ export namespace UngramDocument {
 		ungramDocument.grammar.accept(identifierVisitor);
 
 		ungramDocument.definitionMap = identifierVisitor.definitionMap;
-		ungramDocument.identifiers = identifierVisitor.identifiers;
+		ungramDocument.identifierMap = identifierVisitor.identifierMap;
 	}
 
 	export function validate(
@@ -85,21 +85,41 @@ export namespace UngramDocument {
 		];
 	}
 
+	export function getDefinitionLocations(
+		document: TextDocument,
+		ungramDocument: UngramDocument,
+		nodeName: string,
+	): Location[] {
+		return (
+			ungramDocument.definitionMap.get(nodeName)?.map((node) => ({
+				range: UngramDocument.getNodeRange(node, document),
+				uri: document.uri,
+			})) ?? []
+		);
+	}
+
+	export function getIdentifierLocations(
+		document: TextDocument,
+		ungramDocument: UngramDocument,
+		nodeName: string,
+	): Location[] {
+		return (
+			ungramDocument.identifierMap.get(nodeName)?.map((node) => ({
+				range: UngramDocument.getNodeRange(node, document),
+				uri: document.uri,
+			})) ?? []
+		);
+	}
+
 	export function getReferences(
 		document: TextDocument,
 		ungramDocument: UngramDocument,
 		nodeName: string,
 	): Location[] {
-		const defs =
-			ungramDocument.definitionMap.get(nodeName)?.map((node) => ({
-				range: UngramDocument.getNodeRange(node, document),
-				uri: document.uri,
-			})) ?? [];
-		const idents = ungramDocument.identifiers
-			.map((node) => UngramDocument.getNodeData(node, document))
-			.filter(([identName]) => identName === nodeName)
-			.map(([, range]) => ({ range, uri: document.uri }));
-		return [...defs, ...idents];
+		return [
+			...getDefinitionLocations(document, ungramDocument, nodeName),
+			...getIdentifierLocations(document, ungramDocument, nodeName),
+		];
 	}
 
 	export function getChanges(
@@ -245,13 +265,14 @@ function getUndefinedIdentifierProblems(
 	ungramDocument: UngramDocument,
 ): IProblem[] {
 	const problems: IProblem[] = [];
-	for (const ident of ungramDocument.identifiers) {
-		const [name, range] = UngramDocument.getNodeData(ident, document);
+	for (const [name, nodeRefs] of ungramDocument.identifierMap) {
 		if (!ungramDocument.definitionMap.get(name)) {
-			problems.push({
-				code: ErrorCode.UndefinedIdentifier,
-				range,
-			});
+			for (const nodeRef of nodeRefs) {
+				problems.push({
+					code: ErrorCode.UndefinedIdentifier,
+					range: UngramDocument.getNodeRange(nodeRef, document),
+				});
+			}
 		}
 	}
 	return problems;
@@ -306,24 +327,27 @@ function unescapeString(value: string) {
 
 export class IdentifierVisitor extends AstVisitor {
 	definitionMap: Map<string, SyntaxNodeRef[]> = new Map();
-	identifiers: SyntaxNodeRef[] = [];
+	identifierMap: Map<string, SyntaxNodeRef[]> = new Map();
 
 	constructor(public readonly textDocument: TextDocument) {
 		super();
 	}
 
 	override visitIdentifier(acceptor: Identifier): void {
+		const [name] = UngramDocument.getNodeData(
+			acceptor.syntax,
+			this.textDocument,
+		);
 		if (acceptor.syntax.matchContext(["Node"])) {
-			const [name] = UngramDocument.getNodeData(
-				acceptor.syntax,
-				this.textDocument,
-			);
 			if (!this.definitionMap.get(name)) {
 				this.definitionMap.set(name, []);
 			}
-			this.definitionMap.get(name)?.push(acceptor.syntax);
+			this.definitionMap.get(name)!.push(acceptor.syntax);
 		} else if (!acceptor.syntax.matchContext(["Label"])) {
-			this.identifiers.push(acceptor.syntax);
+			if (!this.identifierMap.get(name)) {
+				this.identifierMap.set(name, []);
+			}
+			this.identifierMap.get(name)!.push(acceptor.syntax);
 		}
 	}
 

@@ -3,6 +3,7 @@ import type {
 	LanguageServiceState,
 	Location,
 	Position,
+	ReferenceContext,
 	TextDocument,
 } from "../ungramLanguageTypes.js";
 
@@ -12,6 +13,7 @@ export namespace UngramReference {
 		document: TextDocument,
 		ungramDocument: UngramDocument,
 		position: Position,
+		context: ReferenceContext,
 	): PromiseLike<Location[] | null> {
 		const offset = document.offsetAt(position);
 
@@ -20,7 +22,12 @@ export namespace UngramReference {
 		}
 
 		return state.promise.resolve(
-			getNodeReferences(document, ungramDocument, offset),
+			getNodeReferences(
+				document,
+				ungramDocument,
+				offset,
+				context.includeDeclaration,
+			),
 		);
 	}
 }
@@ -29,10 +36,18 @@ function getNodeReferences(
 	document: TextDocument,
 	ungramDocument: UngramDocument,
 	offset: number,
+	includeDeclaration: boolean,
 ): Location[] | null {
 	const [nodeName] = UngramDocument.getNodeData(
 		UngramDocument.getNodeByOffset(ungramDocument, offset),
 		document,
 	);
-	return UngramDocument.getReferences(document, ungramDocument, nodeName);
+	if (includeDeclaration) {
+		return UngramDocument.getReferences(document, ungramDocument, nodeName);
+	}
+	return UngramDocument.getIdentifierLocations(
+		document,
+		ungramDocument,
+		nodeName,
+	);
 }
