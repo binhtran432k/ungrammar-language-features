@@ -15,7 +15,7 @@ export function formatError(message: string, err: unknown): string {
 	return message;
 }
 
-export function runSafeAsync<T, E>(
+export function runSafeAsync<T, E = void>(
 	runtime: RuntimeEnvironment,
 	func: () => Thenable<T>,
 	errorVal: T,
