@@ -17,7 +17,7 @@ import {
 	type LanguageModelCache,
 	getLanguageModelCache,
 } from "./languageModelCache.js";
-import { runSafeAsync } from "./utils/runner.js";
+import { runSafe, runSafeAsync } from "./utils/runner.js";
 import {
 	type DiagnosticsSupport,
 	registerDiagnosticsPullSupport,
@@ -110,6 +110,7 @@ export function startServer(
 			codeActionProvider: true,
 			foldingRangeProvider: true,
 			selectionRangeProvider: true,
+			codeLensProvider: { resolveProvider: false },
 			diagnosticProvider: {
 				documentSelector: null,
 				interFileDependencies: false,
@@ -266,9 +267,9 @@ export function startServer(
 	);
 
 	connection.onFoldingRanges((foldingRangeParams, token) =>
-		runSafeAsync(
+		runSafe(
 			runtime,
-			async () => {
+			() => {
 				const document = documents.get(foldingRangeParams.textDocument.uri);
 				if (document) {
 					const ungramDocument = getUngramDocument(state, document);
@@ -283,9 +284,9 @@ export function startServer(
 	);
 
 	connection.onSelectionRanges((selectionRangeParams, token) =>
-		runSafeAsync(
+		runSafe(
 			runtime,
-			async () => {
+			() => {
 				const document = documents.get(selectionRangeParams.textDocument.uri);
 				if (document) {
 					const ungramDocument = getUngramDocument(state, document);
@@ -295,6 +296,23 @@ export function startServer(
 			},
 			null,
 			`Error while computing selection ranges for ${selectionRangeParams.textDocument.uri}`,
+			token,
+		),
+	);
+
+	connection.onCodeLens((codeLensParams, token) =>
+		runSafe(
+			runtime,
+			() => {
+				const document = documents.get(codeLensParams.textDocument.uri);
+				if (document) {
+					const ungramDocument = getUngramDocument(state, document);
+					return languageService.getCodeLens(document, ungramDocument);
+				}
+				return null;
+			},
+			null,
+			`Error while computing code lens for ${codeLensParams.textDocument.uri}`,
 			token,
 		),
 	);
