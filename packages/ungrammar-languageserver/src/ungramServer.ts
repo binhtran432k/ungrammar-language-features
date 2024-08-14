@@ -108,6 +108,7 @@ export function startServer(
 			referencesProvider: true,
 			renameProvider: true,
 			codeActionProvider: true,
+			foldingRangeProvider: true,
 			diagnosticProvider: {
 				documentSelector: null,
 				interFileDependencies: false,
@@ -259,6 +260,23 @@ export function startServer(
 			},
 			null,
 			`Error while computing code action for ${codeActionParams.textDocument.uri}`,
+			token,
+		),
+	);
+
+	connection.onFoldingRanges((foldingRangeParams, token) =>
+		runSafeAsync(
+			runtime,
+			async () => {
+				const document = documents.get(foldingRangeParams.textDocument.uri);
+				if (document) {
+					const ungramDocument = getUngramDocument(state, document);
+					return languageService.getFoldingRanges(document, ungramDocument);
+				}
+				return null;
+			},
+			null,
+			`Error while computing folding ranges for ${foldingRangeParams.textDocument.uri}`,
 			token,
 		),
 	);

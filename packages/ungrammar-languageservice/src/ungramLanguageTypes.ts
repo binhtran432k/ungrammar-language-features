@@ -6,6 +6,7 @@ import type {
 	CompletionList,
 	Definition,
 	Diagnostic,
+	FoldingRange,
 	Hover,
 	Location,
 	Position,
@@ -25,6 +26,7 @@ export {
 	CompletionList,
 	Diagnostic,
 	DiagnosticSeverity,
+	FoldingRange,
 	Hover,
 	MarkedString,
 	MarkupContent,
@@ -78,6 +80,10 @@ export interface LanguageService {
 		range: Range,
 		context: CodeActionContext,
 	): PromiseLike<(Command | CodeAction)[] | null>;
+	getFoldingRanges(
+		document: TextDocument,
+		ungramDocument: UngramDocument,
+	): FoldingRange[];
 }
 
 export interface LanguageServiceParams {
