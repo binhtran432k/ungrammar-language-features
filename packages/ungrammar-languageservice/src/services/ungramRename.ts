@@ -3,7 +3,6 @@ import type {
 	LanguageServiceState,
 	Position,
 	TextDocument,
-	TextEdit,
 	WorkspaceEdit,
 } from "../ungramLanguageTypes.js";
 
@@ -44,16 +43,7 @@ function getNodeRename(
 		return null;
 	}
 
-	const changes: Record<string, TextEdit[]> = {};
-
-	for (const ref of refs) {
-		if (!changes[ref.uri]) {
-			changes[ref.uri] = [];
-		}
-		changes[ref.uri].push({ newText: newName, range: ref.range });
-	}
-
 	return {
-		changes,
+		changes: UngramDocument.getChanges(refs, newName),
 	};
 }

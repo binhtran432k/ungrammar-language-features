@@ -8,6 +8,7 @@ import {
 	type Location,
 	Range,
 	type TextDocument,
+	type TextEdit,
 } from "../ungramLanguageTypes.js";
 import {
 	AstVisitor,
@@ -99,6 +100,22 @@ export namespace UngramDocument {
 			.filter(([identName]) => identName === nodeName)
 			.map(([, range]) => ({ range, uri: document.uri }));
 		return [...defs, ...idents];
+	}
+
+	export function getChanges(
+		refs: Location[],
+		newName: string,
+	): Record<string, TextEdit[]> {
+		const changes: Record<string, TextEdit[]> = {};
+
+		for (const ref of refs) {
+			if (!changes[ref.uri]) {
+				changes[ref.uri] = [];
+			}
+			changes[ref.uri].push({ newText: newName, range: ref.range });
+		}
+
+		return changes;
 	}
 
 	export function getNodeRange(nodeRef: SyntaxNodeRef, document: TextDocument) {

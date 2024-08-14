@@ -1,4 +1,5 @@
 import { UngramDocument } from "./ast/ungramDocument.js";
+import { UngramCodeAction } from "./services/ungramCodeAction.js";
 import { UngramCompletion } from "./services/ungramCompletion.js";
 import { UngramDefinition } from "./services/ungramDefinition.js";
 import { UngramHover } from "./services/ungramHover.js";
@@ -36,5 +37,6 @@ export function getLanguageService(
 		doDefinition: UngramDefinition.doDefinition.bind(null, state),
 		doReferences: UngramReference.doReferences.bind(null, state),
 		doRename: UngramRename.doRename.bind(null, state),
+		doCodeAction: UngramCodeAction.doCodeAction.bind(null, state),
 	};
 }

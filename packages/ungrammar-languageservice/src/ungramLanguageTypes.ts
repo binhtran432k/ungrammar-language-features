@@ -1,5 +1,8 @@
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import type {
+	CodeAction,
+	CodeActionContext,
+	Command,
 	CompletionList,
 	Definition,
 	Diagnostic,
@@ -13,6 +16,9 @@ import type { UngramDocument } from "./ast/ungramDocument.js";
 
 export { TextDocument } from "vscode-languageserver-textdocument";
 export {
+	CodeAction,
+	CodeActionContext,
+	Command,
 	CompletionItem,
 	CompletionItemKind,
 	CompletionItemLabelDetails,
@@ -66,6 +72,12 @@ export interface LanguageService {
 		position: Position,
 		newName: string,
 	): PromiseLike<WorkspaceEdit | null>;
+	doCodeAction(
+		document: TextDocument,
+		ungramDocument: UngramDocument,
+		range: Range,
+		context: CodeActionContext,
+	): PromiseLike<(Command | CodeAction)[] | null>;
 }
 
 export interface LanguageServiceParams {
