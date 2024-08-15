@@ -7,6 +7,7 @@ Program = Foo
 Grammar(
   Node(
     Identifier,
+    "=",
     Rule(Identifier)))
 
 # Optional rule
@@ -18,8 +19,9 @@ Program = Foo?
 Grammar(
   Node(
     Identifier,
+    "=",
     Rule(Optional(
-      Rule(Identifier)))))
+      Rule(Identifier),"?"))))
 
 # Repeat rule
 
@@ -30,8 +32,9 @@ Program = Foo*
 Grammar(
   Node(
     Identifier,
+    "=",
     Rule(Repetition(
-      Rule(Identifier)))))
+      Rule(Identifier),"*"))))
 
 # Group rule
 
@@ -42,10 +45,13 @@ Program = (Foo Bar)
 Grammar(
   Node(
     Identifier,
+    "=",
     Rule(Group(
+      "(",
       Rule(Sequence(
         Rule(Identifier),
-        Rule(Identifier)))))))
+        Rule(Identifier))),
+      ")"))))
 
 # Alternative rule
 
@@ -56,8 +62,10 @@ Program = Foo | Bar
 Grammar(
   Node(
     Identifier,
+    "=",
     Rule(Alternative(
       Rule(Identifier),
+      "|",
       Rule(Identifier)))))
 
 # Sequence rule
@@ -69,6 +77,7 @@ Program = Foo Bar
 Grammar(
   Node(
     Identifier,
+    "=",
     Rule(Sequence(
       Rule(Identifier),
       Rule(Identifier)))))
@@ -82,8 +91,9 @@ Program = foo:Foo Bar
 Grammar(
   Node(
     Identifier,
+    "=",
     Rule(Sequence(
-      Rule(Label(Identifier, Rule(Identifier))),
+      Rule(Label(Identifier,":",Rule(Identifier))),
       Rule(Identifier)))))
 
 # Complex rule
@@ -101,18 +111,27 @@ Program =
 Grammar(
   Node(
     Identifier,
+    "=",
     Rule(Alternative(
       Rule(Sequence(
         Rule(Identifier),
         Rule(Identifier))),
+      "|",
       Rule(Identifier),
-      Rule(Optional(Rule(Identifier))),
-      Rule(Repetition(Rule(Identifier))),
-      Rule(Label(Identifier, Rule(Identifier))),
+      "|",
+      Rule(Optional(Rule(Identifier),"?")),
+      "|",
+      Rule(Repetition(Rule(Identifier),"*")),
+      "|",
+      Rule(Label(Identifier,":",Rule(Identifier))),
+      "|",
       Rule(Group(
+        "(",
         Rule(Alternative(
           Rule(Token),
-          Rule(Identifier)))))))))
+          "|",
+          Rule(Identifier))),
+        ")"))))))
 
 # Invalid rule - Unclosed group
 
@@ -124,7 +143,9 @@ Bar = 'Boo'
 Grammar(
   Node(
     Identifier,
-    Rule(Group(Rule(Identifier), UnclosedGroup))),
+    "=",
+    Rule(Group("(", Rule(Identifier), UnclosedGroup))),
   Node(
     Identifier,
+    "=",
     Rule(Token)))

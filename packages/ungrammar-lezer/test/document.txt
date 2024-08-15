@@ -13,6 +13,7 @@ Program = 'Foo'
 Grammar(
   Node(
     Identifier,
+    "=",
     Rule(Token)))
 
 # Invalid document

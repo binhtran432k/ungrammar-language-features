@@ -1,6 +1,7 @@
 import {
 	type LanguageService,
 	type UngramDocument,
+	UngramSemanticTokensLegend,
 	getLanguageService,
 } from "ungrammar-languageservice";
 import {
@@ -8,6 +9,7 @@ import {
 	type Diagnostic,
 	type Disposable,
 	type InitializeParams,
+	type SemanticTokens,
 	type ServerCapabilities,
 	TextDocumentSyncKind,
 	TextDocuments,
@@ -17,7 +19,11 @@ import {
 	type LanguageModelCache,
 	getLanguageModelCache,
 } from "./languageModelCache.js";
-import { runSafe, runSafeAsync } from "./utils/runner.js";
+import {
+	runSafe,
+	runSafeAsync,
+	runSafeWithCustomCancel,
+} from "./utils/runner.js";
 import {
 	type DiagnosticsSupport,
 	registerDiagnosticsPullSupport,
@@ -111,6 +117,11 @@ export function startServer(
 			foldingRangeProvider: true,
 			selectionRangeProvider: true,
 			codeLensProvider: { resolveProvider: false },
+			semanticTokensProvider: {
+				legend: UngramSemanticTokensLegend,
+				full: true,
+				range: true,
+			},
 			diagnosticProvider: {
 				documentSelector: null,
 				interFileDependencies: false,
@@ -316,6 +327,55 @@ export function startServer(
 			`Error while computing code lens for ${codeLensParams.textDocument.uri}`,
 			token,
 		),
+	);
+
+	connection.languages.semanticTokens.on((semanticTokensParams, token) => {
+		const emptyTokens: SemanticTokens = { data: [] };
+		return runSafeWithCustomCancel(
+			runtime,
+			() => {
+				const document = documents.get(semanticTokensParams.textDocument.uri);
+				if (document) {
+					const ungramDocument = getUngramDocument(state, document);
+					return state.languageService.getSemanticTokens(
+						document,
+						ungramDocument,
+					);
+				}
+				return emptyTokens;
+			},
+			emptyTokens,
+			emptyTokens,
+			`Error while computing semantic tokens for ${semanticTokensParams.textDocument.uri}`,
+			token,
+		);
+	});
+
+	connection.languages.semanticTokens.onRange(
+		(semanticTokensRangeParams, token) => {
+			const emptyTokens: SemanticTokens = { data: [] };
+			return runSafeWithCustomCancel(
+				runtime,
+				() => {
+					const document = documents.get(
+						semanticTokensRangeParams.textDocument.uri,
+					);
+					if (document) {
+						const ungramDocument = getUngramDocument(state, document);
+						return state.languageService.getSemanticTokens(
+							document,
+							ungramDocument,
+							semanticTokensRangeParams.range,
+						);
+					}
+					return emptyTokens;
+				},
+				emptyTokens,
+				emptyTokens,
+				`Error while computing range of semantic tokens for ${semanticTokensRangeParams.textDocument.uri}`,
+				token,
+			);
+		},
 	);
 
 	// Listen on the connection

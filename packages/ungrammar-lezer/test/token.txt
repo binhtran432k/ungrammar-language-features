@@ -4,7 +4,7 @@ Foo = 'Bar'
 
 ==>
 
-Grammar(Node(Identifier,Rule(Token)))
+Grammar(Node(Identifier,"=",Rule(Token)))
 
 # Empty token
 
@@ -12,7 +12,7 @@ Foo = ''
 
 ==>
 
-Grammar(Node(Identifier,Rule(Token)))
+Grammar(Node(Identifier,"=",Rule(Token)))
 
 # Escaped token
 
@@ -21,7 +21,7 @@ Foo = 'Bar\'Far'
 
 ==>
 
-Grammar(Node(Identifier,Rule(Token)),Node(Identifier,Rule(Token)))
+Grammar(Node(Identifier,"=",Rule(Token)),Node(Identifier,"=",Rule(Token)))
 
 # Invalid token - Unexpected escape
 
@@ -29,7 +29,7 @@ Foo = 'B\aar'
 
 ==>
 
-Grammar(Node(Identifier,Rule(Token(InvalidEscape))))
+Grammar(Node(Identifier,"=",Rule(Token(InvalidEscape))))
 
 # Invalid token - Unclosed
 
@@ -39,5 +39,5 @@ Bar = Goo
 ==>
 
 Grammar(
-  Node(Identifier, Rule(Token(UnclosedToken))),
-  Node(Identifier, Rule(Identifier)))
+  Node(Identifier,"=",Rule(Token(UnclosedToken))),
+  Node(Identifier,"=",Rule(Identifier)))

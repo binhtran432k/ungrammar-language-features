@@ -76,7 +76,7 @@ describe("Ungrammar AST", () => {
 	});
 
 	test("Unexpected", () => {
-		isInvalid("()", ErrorCode.Unexpected);
+		isInvalid("()", ErrorCode.Unexpected, ErrorCode.Unexpected);
 	});
 
 	test("Redeclare definition", () => {

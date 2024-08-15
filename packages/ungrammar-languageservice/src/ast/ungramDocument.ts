@@ -41,7 +41,7 @@ export namespace UngramDocument {
 			tree,
 			fragments,
 			grammar,
-			unknowns: filterSkipNode(unknowns),
+			unknowns: filterValidNode(unknowns),
 			definitionMap: identifierVisitor.definitionMap,
 			identifierMap: identifierVisitor.identifierMap,
 		};
@@ -56,7 +56,7 @@ export namespace UngramDocument {
 		ungramDocument.fragments = fragments;
 		const unknowns: SyntaxNodeRef[] = [];
 		ungramDocument.grammar = new Grammar(tree.cursor(), unknowns);
-		ungramDocument.unknowns = filterSkipNode(unknowns);
+		ungramDocument.unknowns = filterValidNode(unknowns);
 
 		const identifierVisitor = new IdentifierVisitor(document);
 		ungramDocument.grammar.accept(identifierVisitor);
@@ -208,8 +208,10 @@ function parseTree(
 	return [tree, newFragments];
 }
 
-function filterSkipNode(nodes: SyntaxNodeRef[]): SyntaxNodeRef[] {
-	return nodes.filter((n) => !n.type.is("Comment"));
+function filterValidNode(nodes: SyntaxNodeRef[]): SyntaxNodeRef[] {
+	return nodes.filter(
+		(n) => !["Comment", "=", ":", "|", "*", "?", "(", ")"].includes(n.name),
+	);
 }
 
 function getSyntaxProblems(
