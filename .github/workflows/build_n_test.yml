@@ -29,8 +29,8 @@ jobs:
       - name: Install bun dependencies
         run: bun install --frozen-lockfile
 
-      - name: Run biome ci check
-        run: bun ci
+      - name: Run biome lint check
+        run: bun lint
 
       - name: Compile all
         run: bun compile

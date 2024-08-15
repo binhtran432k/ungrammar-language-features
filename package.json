@@ -6,7 +6,7 @@
 	"license": "MIT",
 	"type": "module",
 	"scripts": {
-		"ci": "biome ci",
+		"lint": "biome ci",
 		"fix": "biome check --fix --unsafe",
 		"compile": "bun compile:lezer && bun compile:service && bun compile:server",
 		"compile:server": "bun --cwd packages/ungrammar-languageserver compile",
