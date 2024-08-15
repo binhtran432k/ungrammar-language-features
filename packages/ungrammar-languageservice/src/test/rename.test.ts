@@ -1,10 +1,33 @@
 import { describe, expect, test } from "bun:test";
+import { UngramRename } from "../services/ungramRename.js";
 import {
 	TextDocument,
 	type WorkspaceEdit,
 	getLanguageService,
 } from "../ungramLanguageService.js";
 import { createRange, parseCursorMark } from "./utils.js";
+
+describe("Check Identifier", () => {
+	test("Valid Simple", () => {
+		expect(UngramRename.isValidIdentifier("abcXyz")).toBeTrue();
+	});
+
+	test("Valid With Underscore", () => {
+		expect(UngramRename.isValidIdentifier("abc_xyz")).toBeTrue();
+	});
+
+	test("Invalid alphabetic", () => {
+		expect(UngramRename.isValidIdentifier("abc!c")).toBeFalse();
+	});
+
+	test("Invalid number", () => {
+		expect(UngramRename.isValidIdentifier("abc2c")).toBeFalse();
+	});
+
+	test("Invalid dash", () => {
+		expect(UngramRename.isValidIdentifier("abc-c")).toBeFalse();
+	});
+});
 
 describe("Ungrammar Rename", () => {
 	async function testRename(
@@ -161,6 +184,14 @@ describe("Ungrammar Rename", () => {
 					],
 				},
 			});
+		});
+	});
+
+	test("Rename with Invalid New Name", async () => {
+		const content = "Fo|o='Bar'";
+		const newName = "Boo Ga";
+		await testRename(content, newName, (_document, result) => {
+			expect(result).toEqual(null);
 		});
 	});
 });
