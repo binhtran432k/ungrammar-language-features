@@ -7,6 +7,7 @@ import type {
 	CompletionList,
 	Definition,
 	Diagnostic,
+	DocumentHighlight,
 	FoldingRange,
 	Hover,
 	Location,
@@ -31,6 +32,7 @@ export {
 	CompletionList,
 	Diagnostic,
 	DiagnosticSeverity,
+	DocumentHighlight,
 	FoldingRange,
 	Hover,
 	MarkedString,
@@ -81,6 +83,11 @@ export interface LanguageService {
 		position: Position,
 		context: ReferenceContext,
 	): PromiseLike<Location[] | null>;
+	doDocumentHighlight(
+		document: TextDocument,
+		ungramDocument: UngramDocument,
+		position: Position,
+	): PromiseLike<DocumentHighlight[] | null>;
 	doRename(
 		document: TextDocument,
 		ungramDocument: UngramDocument,

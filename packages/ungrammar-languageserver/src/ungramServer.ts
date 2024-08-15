@@ -117,6 +117,7 @@ export function startServer(
 			foldingRangeProvider: true,
 			selectionRangeProvider: true,
 			codeLensProvider: { resolveProvider: false },
+			documentHighlightProvider: true,
 			semanticTokensProvider: {
 				legend: UngramSemanticTokensLegend,
 				full: true,
@@ -325,6 +326,29 @@ export function startServer(
 			},
 			null,
 			`Error while computing code lens for ${codeLensParams.textDocument.uri}`,
+			token,
+		),
+	);
+
+	connection.onDocumentHighlight((documentHighlightParams, token) =>
+		runSafeAsync(
+			runtime,
+			async () => {
+				const document = documents.get(
+					documentHighlightParams.textDocument.uri,
+				);
+				if (document) {
+					const ungramDocument = getUngramDocument(state, document);
+					return state.languageService.doDocumentHighlight(
+						document,
+						ungramDocument,
+						documentHighlightParams.position,
+					);
+				}
+				return null;
+			},
+			null,
+			`Error while computing document highlight for ${documentHighlightParams.textDocument.uri}`,
 			token,
 		),
 	);
