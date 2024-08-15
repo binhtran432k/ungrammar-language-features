@@ -39,6 +39,15 @@ export function getLanguageService(
 		doComplete: UngramCompletion.doComplete.bind(null, state),
 		doDefinition: UngramDefinition.doDefinition.bind(null, state),
 		doReferences: UngramReference.doReferences.bind(null, state),
+		doDocumentHighlight(document, ungramDocument, position) {
+			return UngramReference.doReferences(
+				state,
+				document,
+				ungramDocument,
+				position,
+				{ includeDeclaration: true },
+			);
+		},
 		doRename: UngramRename.doRename.bind(null, state),
 		doCodeAction: UngramCodeAction.doCodeAction.bind(null, state),
 		getFoldingRanges: UngramFolding.getFoldingRanges,
