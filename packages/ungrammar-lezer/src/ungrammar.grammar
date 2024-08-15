@@ -67,6 +67,14 @@ Identifier { identifier }
 
   eol { $[\r\n] | @eof }
   Comment { "//" ![\r\n]* eol }
+
+  "="
+  ":"
+  "?"
+  "|"
+  "*"
+  "("
+  ")"
 }
 
 @skip { whitespace | WhitespaceR | Comment }

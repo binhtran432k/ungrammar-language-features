@@ -27,7 +27,7 @@ for (const file of fs.readdirSync(caseDir)) {
 describe("Ungrammar Lezer unwritable", () => {
 	test("Unexpected \\r", () => {
 		expect(parser.parse("Foo=Bar\r\n").toString()).toBe(
-			normalize("Grammar(Node(Identifier,Rule(Identifier)),WhitespaceR)"),
+			normalize('Grammar(Node(Identifier,"=",Rule(Identifier)),WhitespaceR)'),
 		);
 	});
 });

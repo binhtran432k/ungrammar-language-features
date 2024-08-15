@@ -22,16 +22,51 @@ export function runSafeAsync<T, E = void>(
 	errorMessage: string,
 	token: CancellationToken,
 ): Thenable<T | ResponseError<E>> {
-	return new Promise<T | ResponseError<E>>((resolve) => {
+	return runSafeWithCustomCancelAsync(
+		runtime,
+		func,
+		errorVal,
+		cancelValue(),
+		errorMessage,
+		token,
+	);
+}
+
+export function runSafe<T, E = void>(
+	runtime: RuntimeEnvironment,
+	func: () => T,
+	errorVal: T,
+	errorMessage: string,
+	token: CancellationToken,
+): Thenable<T | ResponseError<E>> {
+	return runSafeWithCustomCancel(
+		runtime,
+		func,
+		errorVal,
+		cancelValue(),
+		errorMessage,
+		token,
+	);
+}
+
+export function runSafeWithCustomCancelAsync<T, E>(
+	runtime: RuntimeEnvironment,
+	func: () => Thenable<T>,
+	errorVal: T,
+	cancelVal: E,
+	errorMessage: string,
+	token: CancellationToken,
+): Thenable<T | E> {
+	return new Promise<T | E>((resolve) => {
 		runtime.timer.setImmediate(() => {
 			if (token.isCancellationRequested) {
-				resolve(cancelValue());
+				resolve(cancelVal);
 				return;
 			}
 			return func().then(
 				(result) => {
 					if (token.isCancellationRequested) {
-						resolve(cancelValue());
+						resolve(cancelVal);
 						return;
 					}
 					resolve(result);
@@ -45,22 +80,23 @@ export function runSafeAsync<T, E = void>(
 	});
 }
 
-export function runSafe<T, E = void>(
+export function runSafeWithCustomCancel<T, E>(
 	runtime: RuntimeEnvironment,
 	func: () => T,
 	errorVal: T,
+	cancelVal: E,
 	errorMessage: string,
 	token: CancellationToken,
-): Thenable<T | ResponseError<E>> {
-	return new Promise<T | ResponseError<E>>((resolve) => {
+): Thenable<T | E> {
+	return new Promise<T | E>((resolve) => {
 		runtime.timer.setImmediate(() => {
 			if (token.isCancellationRequested) {
-				resolve(cancelValue());
+				resolve(cancelVal);
 			} else {
 				try {
 					const result = func();
 					if (token.isCancellationRequested) {
-						resolve(cancelValue());
+						resolve(cancelVal);
 						return;
 					}
 					resolve(result);

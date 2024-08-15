@@ -14,6 +14,7 @@ import type {
 	Range,
 	ReferenceContext,
 	SelectionRange,
+	SemanticTokens,
 	WorkspaceEdit,
 } from "vscode-languageserver-types";
 import type { UngramDocument } from "./ast/ungramDocument.js";
@@ -22,27 +23,32 @@ export { TextDocument } from "vscode-languageserver-textdocument";
 export {
 	CodeAction,
 	CodeActionContext,
+	CodeLens,
 	Command,
 	CompletionItem,
 	CompletionItemKind,
 	CompletionItemLabelDetails,
 	CompletionList,
-	CodeLens,
 	Diagnostic,
 	DiagnosticSeverity,
 	FoldingRange,
 	Hover,
 	MarkedString,
 	MarkupContent,
-	type ReferenceContext,
 	MarkupKind,
 	Position,
 	Range,
 	SelectionRange,
+	SemanticTokenModifiers,
+	SemanticTokens,
+	SemanticTokenTypes,
 	TextEdit,
+	uinteger,
 	WorkspaceEdit,
 	type Definition,
 	type Location,
+	type ReferenceContext,
+	type SemanticTokensLegend,
 } from "vscode-languageserver-types";
 
 export interface LanguageService {
@@ -99,6 +105,11 @@ export interface LanguageService {
 		document: TextDocument,
 		ungramDocument: UngramDocument,
 	): CodeLens[];
+	getSemanticTokens(
+		document: TextDocument,
+		ungramDocument: UngramDocument,
+		range?: Range,
+	): SemanticTokens;
 }
 
 export interface LanguageServiceParams {

@@ -8,6 +8,7 @@ import { UngramHover } from "./services/ungramHover.js";
 import { UngramReference } from "./services/ungramReference.js";
 import { UngramRename } from "./services/ungramRename.js";
 import { UngramSelection } from "./services/ungramSelection.js";
+import { UngramSemanticTokens } from "./services/ungramSemanticTokens.js";
 import { UngramValidation } from "./services/ungramValidation.js";
 import type {
 	LanguageService,
@@ -16,6 +17,7 @@ import type {
 } from "./ungramLanguageTypes.js";
 
 export * from "./ast/ungramDocument.js";
+export { UngramSemanticTokensLegend } from "./services/ungramSemanticTokens.js";
 export * from "./ungramLanguageTypes.js";
 
 export function getLanguageService(
@@ -44,5 +46,6 @@ export function getLanguageService(
 		getFoldingRanges: UngramFolding.getFoldingRanges,
 		getSelectionRanges: UngramSelection.getSelectionRanges,
 		getCodeLens: UngramCodeLens.getCodeLens,
+		getSemanticTokens: UngramSemanticTokens.getSemanticTokens,
 	};
 }
