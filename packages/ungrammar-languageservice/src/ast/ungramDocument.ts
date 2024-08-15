@@ -1,5 +1,5 @@
 import { type SyntaxNodeRef, type Tree, TreeFragment } from "@lezer/common";
-import { parser } from "ungrammar-lezer";
+import { parser as originParser } from "ungrammar-lezer";
 import {
 	type Diagnostic,
 	DiagnosticSeverity,
@@ -28,6 +28,8 @@ export interface UngramDocument {
 	identifierMap: Map<string, SyntaxNodeRef[]>;
 }
 
+const parser = originParser.configure({ bufferLength: 262144 });
+
 export namespace UngramDocument {
 	export function parse(document: TextDocument): UngramDocument {
 		const [tree, fragments] = parseTree(document, []);
@@ -50,7 +52,7 @@ export namespace UngramDocument {
 	export function reparse(
 		document: TextDocument,
 		ungramDocument: UngramDocument,
-	): void {
+	): UngramDocument {
 		const [tree, fragments] = parseTree(document, ungramDocument.fragments);
 		ungramDocument.tree = tree;
 		ungramDocument.fragments = fragments;
@@ -63,6 +65,7 @@ export namespace UngramDocument {
 
 		ungramDocument.definitionMap = identifierVisitor.definitionMap;
 		ungramDocument.identifierMap = identifierVisitor.identifierMap;
+		return ungramDocument;
 	}
 
 	export function validate(

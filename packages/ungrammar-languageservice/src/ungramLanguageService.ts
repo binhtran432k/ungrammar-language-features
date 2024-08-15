@@ -31,11 +31,9 @@ export function getLanguageService(
 	return {
 		doValidation: UngramValidation.doValidation.bind(null, state),
 		parseUngramDocument(document, ungramDocument) {
-			if (ungramDocument === undefined) {
-				return UngramDocument.parse(document);
-			}
-			UngramDocument.reparse(document, ungramDocument);
-			return ungramDocument;
+			return ungramDocument === undefined
+				? UngramDocument.parse(document)
+				: UngramDocument.reparse(document, ungramDocument);
 		},
 		doHover: UngramHover.doHover.bind(null, state),
 		doComplete: UngramCompletion.doComplete.bind(null, state),
