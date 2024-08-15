@@ -12,6 +12,7 @@ import type {
 	Location,
 	Position,
 	Range,
+	ReferenceContext,
 	SelectionRange,
 	WorkspaceEdit,
 } from "vscode-languageserver-types";
@@ -33,6 +34,7 @@ export {
 	Hover,
 	MarkedString,
 	MarkupContent,
+	type ReferenceContext,
 	MarkupKind,
 	Position,
 	Range,
@@ -71,6 +73,7 @@ export interface LanguageService {
 		document: TextDocument,
 		ungramDocument: UngramDocument,
 		position: Position,
+		context: ReferenceContext,
 	): PromiseLike<Location[] | null>;
 	doRename(
 		document: TextDocument,

@@ -212,6 +212,7 @@ export function startServer(
 						document,
 						ungramDocument,
 						referenceParams.position,
+						referenceParams.context,
 					);
 				}
 				return null;

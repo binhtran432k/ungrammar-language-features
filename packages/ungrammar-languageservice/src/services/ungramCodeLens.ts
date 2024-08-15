@@ -41,9 +41,7 @@ class CodeLensVisitor extends AstVisitor {
 			acceptor.syntax,
 			this.document,
 		);
-		const count = this.ungramDocument.identifiers
-			.map((idt) => UngramDocument.getNodeData(idt, this.document))
-			.filter(([name]) => name === nodeName).length;
+		const count = this.ungramDocument.identifierMap.get(nodeName)?.length ?? 0;
 		const lens: CodeLens = {
 			range,
 			command: Command.create(

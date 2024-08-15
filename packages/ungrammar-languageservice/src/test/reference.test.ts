@@ -10,6 +10,7 @@ describe("Ungrammar References", () => {
 	async function testReferences(
 		originValue: string,
 		test: (document: TextDocument, definition: Location[] | null) => void,
+		includeDeclaration = true,
 	) {
 		const uri = "test://test.ungram";
 		const [offset, value] = parseCursorMark(originValue);
@@ -23,6 +24,7 @@ describe("Ungrammar References", () => {
 			document,
 			ungramDoc,
 			position,
+			{ includeDeclaration },
 		);
 
 		test(document, references);
@@ -50,6 +52,17 @@ describe("Ungrammar References", () => {
 				},
 			]);
 		});
+	});
+
+	test("Reference Not Include Declaration", async () => {
+		const content = "Fo|o='Bar'";
+		await testReferences(
+			content,
+			(_document, result) => {
+				expect(result).toEqual([]);
+			},
+			false,
+		);
 	});
 
 	test("Reference Identifier", async () => {
