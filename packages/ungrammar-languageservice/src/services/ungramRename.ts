@@ -14,6 +14,10 @@ export namespace UngramRename {
 		position: Position,
 		newName: string,
 	): PromiseLike<WorkspaceEdit | null> {
+		if (!isValidIdentifier(newName)) {
+			return state.promise.resolve(null);
+		}
+
 		const offset = document.offsetAt(position);
 
 		if (!UngramDocument.isInIdentifier(ungramDocument, offset)) {
@@ -23,6 +27,10 @@ export namespace UngramRename {
 		return state.promise.resolve(
 			getNodeRename(document, ungramDocument, offset, newName),
 		);
+	}
+
+	export function isValidIdentifier(text: string): boolean {
+		return /^[a-zA-Z_]+$/.test(text);
 	}
 }
 
