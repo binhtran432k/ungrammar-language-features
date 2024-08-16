@@ -17,6 +17,7 @@ import {
 	type Token,
 } from "./generated.js";
 
+export { type SyntaxNodeRef, Tree, TreeFragment } from "@lezer/common";
 export * from "./generated.js";
 
 export interface UngramDocument {

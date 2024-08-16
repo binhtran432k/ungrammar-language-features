@@ -4,6 +4,7 @@ import { UngramCodeLens } from "./services/ungramCodeLens.js";
 import { UngramCompletion } from "./services/ungramCompletion.js";
 import { UngramDefinition } from "./services/ungramDefinition.js";
 import { UngramFolding } from "./services/ungramFolding.js";
+import { UngramFormat } from "./services/ungramFormat.js";
 import { UngramHover } from "./services/ungramHover.js";
 import { UngramReference } from "./services/ungramReference.js";
 import { UngramRename } from "./services/ungramRename.js";
@@ -53,6 +54,7 @@ export function getLanguageService(
 		getFoldingRanges: UngramFolding.getFoldingRanges,
 		getSelectionRanges: UngramSelection.getSelectionRanges,
 		getCodeLens: UngramCodeLens.getCodeLens,
+		format: UngramFormat.format,
 		getSemanticTokens: UngramSemanticTokens.getSemanticTokens,
 	};
 }

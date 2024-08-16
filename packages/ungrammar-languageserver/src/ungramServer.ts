@@ -8,11 +8,16 @@ import {
 	type Connection,
 	type Diagnostic,
 	type Disposable,
+	type FormattingOptions,
 	type InitializeParams,
+	Position,
+	Range,
 	type SemanticTokens,
 	type ServerCapabilities,
+	type TextDocumentIdentifier,
 	TextDocumentSyncKind,
 	TextDocuments,
+	TextEdit,
 } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import {
@@ -59,10 +64,13 @@ interface RuntimeSettings {
 }
 
 interface RuntimeState {
+	connection: Connection;
+	documents: TextDocuments<TextDocument>;
 	languageService: LanguageService;
 	ungramDocumentCache: LanguageModelCache<UngramDocument>;
 	diagnosticsSupport?: DiagnosticsSupport;
 	validateEnabled: boolean;
+	formatterMaxNumberOfEdits: number;
 }
 
 export function startServer(
@@ -79,6 +87,8 @@ export function startServer(
 	// Initialize State
 	const languageService = getLanguageService({});
 	const state: RuntimeState = {
+		connection,
+		documents,
 		languageService,
 		ungramDocumentCache: getLanguageModelCache<UngramDocument>(
 			10,
@@ -86,11 +96,16 @@ export function startServer(
 			languageService.parseUngramDocument,
 		),
 		validateEnabled: true,
+		formatterMaxNumberOfEdits: Number.MAX_VALUE,
 	};
 
 	// After the server has started the client sends an initialize request. The server receives
 	// in the passed params the rootPath of the workspace plus the client capabilities.
 	connection.onInitialize((params: InitializeParams) => {
+		state.formatterMaxNumberOfEdits =
+			params.initializationOptions.customCapabilities?.rangeFormatting
+				?.editLimit || Number.MAX_VALUE;
+
 		const supportsDiagnosticPull =
 			!!params.capabilities.textDocument?.diagnostic;
 		const registerDiagnosticsSupport = supportsDiagnosticPull
@@ -118,6 +133,8 @@ export function startServer(
 			selectionRangeProvider: true,
 			codeLensProvider: { resolveProvider: false },
 			documentHighlightProvider: true,
+			documentFormattingProvider: true,
+			documentRangeFormattingProvider: true,
 			semanticTokensProvider: {
 				legend: UngramSemanticTokensLegend,
 				full: true,
@@ -353,6 +370,32 @@ export function startServer(
 		),
 	);
 
+	connection.onDocumentRangeFormatting((formatParams, token) => {
+		return runSafe(
+			runtime,
+			() =>
+				onFormat(
+					state,
+					formatParams.textDocument,
+					formatParams.options,
+					formatParams.range,
+				),
+			[],
+			`Error while formatting range for ${formatParams.textDocument.uri}`,
+			token,
+		);
+	});
+
+	connection.onDocumentFormatting((formatParams, token) => {
+		return runSafe(
+			runtime,
+			() => onFormat(state, formatParams.textDocument, formatParams.options),
+			[],
+			`Error while formatting ${formatParams.textDocument.uri}`,
+			token,
+		);
+	});
+
 	connection.languages.semanticTokens.on((semanticTokensParams, token) => {
 		const emptyTokens: SemanticTokens = { data: [] };
 		return runSafeWithCustomCancel(
@@ -425,4 +468,35 @@ function updateConfiguration(state: RuntimeState) {
 	// TODO: configure language service
 
 	state.diagnosticsSupport?.requestRefresh();
+}
+
+function onFormat(
+	state: RuntimeState,
+	textDocument: TextDocumentIdentifier,
+	options: FormattingOptions,
+	range?: Range,
+): TextEdit[] {
+	const document = state.documents.get(textDocument.uri);
+	if (document) {
+		const ungramDocument = getUngramDocument(state, document);
+		const edits = state.languageService.format(
+			document,
+			ungramDocument,
+			options,
+			range ?? getFullRange(document),
+		);
+		if (edits.length > state.formatterMaxNumberOfEdits) {
+			const newText = TextDocument.applyEdits(document, edits);
+			return [TextEdit.replace(getFullRange(document), newText)];
+		}
+		return edits;
+	}
+	return [];
+}
+
+function getFullRange(document: TextDocument): Range {
+	return Range.create(
+		Position.create(0, 0),
+		document.positionAt(document.getText().length),
+	);
 }

@@ -1,4 +1,7 @@
-import type { TextDocument } from "vscode-languageserver-textdocument";
+import type {
+	TextDocument,
+	TextEdit,
+} from "vscode-languageserver-textdocument";
 import type {
 	CodeAction,
 	CodeActionContext,
@@ -9,6 +12,7 @@ import type {
 	Diagnostic,
 	DocumentHighlight,
 	FoldingRange,
+	FormattingOptions,
 	Hover,
 	Location,
 	Position,
@@ -34,6 +38,7 @@ export {
 	DiagnosticSeverity,
 	DocumentHighlight,
 	FoldingRange,
+	FormattingOptions,
 	Hover,
 	MarkedString,
 	MarkupContent,
@@ -108,6 +113,12 @@ export interface LanguageService {
 		document: TextDocument,
 		ungramDocument: UngramDocument,
 	): SelectionRange[];
+	format(
+		document: TextDocument,
+		ungramDocument: UngramDocument,
+		options: FormattingOptions,
+		range: Range,
+	): TextEdit[];
 	getCodeLens(
 		document: TextDocument,
 		ungramDocument: UngramDocument,
