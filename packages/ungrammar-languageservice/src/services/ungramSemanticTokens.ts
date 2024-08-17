@@ -3,7 +3,6 @@ import type { UngramDocument } from "../ast/ungramDocument.js";
 import {
 	Position,
 	type Range,
-	SemanticTokenModifiers,
 	SemanticTokenTypes,
 	type SemanticTokens,
 	type SemanticTokensLegend,
@@ -12,13 +11,14 @@ import {
 } from "../ungramLanguageTypes.js";
 
 export const UngramSemanticTokensLegend: SemanticTokensLegend = {
-	tokenModifiers: [SemanticTokenModifiers.definition],
+	tokenModifiers: [],
 	tokenTypes: [
 		SemanticTokenTypes.comment,
 		SemanticTokenTypes.operator,
-		SemanticTokenTypes.variable,
 		SemanticTokenTypes.string,
-		SemanticTokenTypes.property,
+		SemanticTokenTypes.function,
+		SemanticTokenTypes.parameter,
+		SemanticTokenTypes.typeParameter,
 	],
 } as const;
 
@@ -33,14 +33,11 @@ const tokensModifiers: { [k: string]: number } = Object.fromEntries(
 /** Custom Highligher for Ungrammar */
 const ungramHighligher = tagHighlighter([
 	{ tag: tags.string, class: SemanticTokenTypes.string },
-	{ tag: tags.labelName, class: SemanticTokenTypes.property },
-	{ tag: tags.variableName, class: SemanticTokenTypes.variable },
+	{ tag: tags.labelName, class: SemanticTokenTypes.typeParameter },
+	{ tag: tags.variableName, class: SemanticTokenTypes.parameter },
 	{
 		tag: tags.definition(tags.variableName),
-		class: [
-			SemanticTokenTypes.variable,
-			SemanticTokenModifiers.definition,
-		].join(" "),
+		class: SemanticTokenTypes.function,
 	},
 	{ tag: tags.comment, class: SemanticTokenTypes.comment },
 	{ tag: tags.operator, class: SemanticTokenTypes.operator },
