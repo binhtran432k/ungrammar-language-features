@@ -4,6 +4,8 @@ import {
 	CompletionItemKind,
 	type CompletionList,
 	type LanguageServiceState,
+	type MarkupContent,
+	MarkupKind,
 	type Position,
 	type TextDocument,
 } from "../ungramLanguageTypes.js";
@@ -42,10 +44,11 @@ function getNodeCompletions(
 		kind: CompletionItemKind.Variable,
 		label: name,
 		commitCharacters: ["="],
-		documentation: UngramDocument.resolveNodesText(
-			document,
-			ungramDocument,
-			nodes,
-		),
+		documentation: {
+			kind: MarkupKind.Markdown,
+			value:
+				UngramDocument.resolveNodesText(document, ungramDocument, nodes) ??
+				name,
+		} satisfies MarkupContent,
 	}));
 }

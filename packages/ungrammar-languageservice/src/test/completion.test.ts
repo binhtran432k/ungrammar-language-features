@@ -4,6 +4,7 @@ import {
 	type CompletionItemLabelDetails,
 	type CompletionList,
 	type MarkupContent,
+	MarkupKind,
 	TextDocument,
 	TextEdit,
 	getLanguageService,
@@ -95,29 +96,41 @@ describe("Ungrammar Completion", () => {
 		}
 	}
 
-	test("Complete node", () => {
+	test("Complete Single Node", () => {
 		testCompletionsFor("Foo='Bar'\n|", {
 			count: 1,
 			items: [
 				{
 					label: "Foo",
 					kind: CompletionItemKind.Variable,
-					documentation: "```ungrammar\nFoo='Bar'\n```",
+					documentation: {
+						kind: MarkupKind.Markdown,
+						value: "```ungrammar\nFoo='Bar'\n```",
+					},
 				},
 			],
 		});
+	});
+
+	test("Complete Multiple Nodes", () => {
 		testCompletionsFor("Foo=Bar\nBar='Boo'\n|", {
 			count: 2,
 			items: [
 				{
 					label: "Foo",
 					kind: CompletionItemKind.Variable,
-					documentation: "```ungrammar\nFoo=Bar\n```",
+					documentation: {
+						kind: MarkupKind.Markdown,
+						value: "```ungrammar\nFoo=Bar\n```",
+					},
 				},
 				{
 					label: "Bar",
 					kind: CompletionItemKind.Variable,
-					documentation: "```ungrammar\nBar='Boo'\n```",
+					documentation: {
+						kind: MarkupKind.Markdown,
+						value: "```ungrammar\nBar='Boo'\n```",
+					},
 				},
 			],
 		});
