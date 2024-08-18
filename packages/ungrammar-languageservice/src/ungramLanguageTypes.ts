@@ -11,6 +11,7 @@ import type {
 	Definition,
 	Diagnostic,
 	DocumentHighlight,
+	DocumentSymbol,
 	FoldingRange,
 	FormattingOptions,
 	Hover,
@@ -51,6 +52,8 @@ export {
 	SemanticTokens,
 	SemanticTokenTypes,
 	TextEdit,
+	DocumentSymbol,
+	SymbolKind,
 	uinteger,
 	WorkspaceEdit,
 	type Definition,
@@ -120,6 +123,10 @@ export interface LanguageService {
 		options: FormattingOptions,
 		range: Range,
 	): TextEdit[];
+	findDocumentSymbols(
+		document: TextDocument,
+		ungramDocument: UngramDocument,
+	): DocumentSymbol[];
 	getCodeLens(
 		document: TextDocument,
 		ungramDocument: UngramDocument,

@@ -135,6 +135,7 @@ export function startServer(
 			documentHighlightProvider: true,
 			documentFormattingProvider: true,
 			documentRangeFormattingProvider: true,
+			documentSymbolProvider: true,
 			semanticTokensProvider: {
 				legend: UngramSemanticTokensLegend,
 				full: true,
@@ -399,6 +400,26 @@ export function startServer(
 			token,
 		);
 	});
+
+	connection.onDocumentSymbol((documentSymbolParams, token) =>
+		runSafe(
+			runtime,
+			() => {
+				const document = documents.get(documentSymbolParams.textDocument.uri);
+				if (document) {
+					const ungramDocument = getUngramDocument(state, document);
+					return state.languageService.findDocumentSymbols(
+						document,
+						ungramDocument,
+					);
+				}
+				return null;
+			},
+			null,
+			`Error while computing document symbol for ${documentSymbolParams.textDocument.uri}`,
+			token,
+		),
+	);
 
 	connection.languages.semanticTokens.on((semanticTokensParams, token) => {
 		const emptyTokens: SemanticTokens = { data: [] };
