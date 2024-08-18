@@ -40,6 +40,7 @@ export {
 	FoldingRange,
 	FormattingOptions,
 	Hover,
+	Location,
 	MarkedString,
 	MarkupContent,
 	MarkupKind,
@@ -53,7 +54,6 @@ export {
 	uinteger,
 	WorkspaceEdit,
 	type Definition,
-	type Location,
 	type ReferenceContext,
 	type SemanticTokensLegend,
 } from "vscode-languageserver-types";
