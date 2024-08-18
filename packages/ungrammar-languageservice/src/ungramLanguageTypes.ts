@@ -112,6 +112,7 @@ export interface LanguageService {
 	getSelectionRanges(
 		document: TextDocument,
 		ungramDocument: UngramDocument,
+		positions: Position[],
 	): SelectionRange[];
 	format(
 		document: TextDocument,

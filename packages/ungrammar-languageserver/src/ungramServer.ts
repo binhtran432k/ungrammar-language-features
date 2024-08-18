@@ -320,7 +320,11 @@ export function startServer(
 				const document = documents.get(selectionRangeParams.textDocument.uri);
 				if (document) {
 					const ungramDocument = getUngramDocument(state, document);
-					return languageService.getSelectionRanges(document, ungramDocument);
+					return languageService.getSelectionRanges(
+						document,
+						ungramDocument,
+						selectionRangeParams.positions,
+					);
 				}
 				return null;
 			},
