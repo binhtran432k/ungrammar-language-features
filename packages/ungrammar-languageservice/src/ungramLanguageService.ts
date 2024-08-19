@@ -31,6 +31,9 @@ export function getLanguageService(
 	};
 
 	return {
+		configuration(settings) {
+			state.validationEnabled = settings.validate;
+		},
 		doValidation: UngramValidation.doValidation.bind(null, state),
 		parseUngramDocument(document, ungramDocument) {
 			return ungramDocument === undefined
