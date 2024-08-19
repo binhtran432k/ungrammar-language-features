@@ -173,3 +173,8 @@ dist
 
 # Finder (MacOS) folder config
 .DS_Store
+
+# VSCode
+.vscode-test/
+.vscode-test-web/
+*.vsix

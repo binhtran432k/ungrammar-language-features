@@ -1,0 +1,12 @@
+{
+	"comments": {
+		"lineComment": "//"
+	},
+	"brackets": [["(", ")"]],
+	"colorizedBracketPairs": [["(", ")"]],
+	"surroundingPairs": [["(", ")"], ["'", "'"]],
+	"autoClosingPairs": [
+		{ "open": "(", "close": ")" },
+		{ "open": "'", "close": "'", "notIn": ["string"] }
+	]
+}

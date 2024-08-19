@@ -1,0 +1,49 @@
+Module =
+  'module' name:ID statements:Statement*
+
+Statement =
+  Definition | Evaluation
+
+Definition =
+  'def'
+  name:ID
+  ('(' args:DeclaredParameter (',' args:DeclaredParameter)* ')')?
+  ':'
+  expr:Expression
+  ';'
+
+DeclaredParameter =
+  name:ID
+
+AbstractDefinition =
+  Definition | DeclaredParameter
+
+Evaluation =
+  expression:Expression ';'
+
+Expression =
+  Addition
+
+Addition =
+  Multiplication (operator:('+' | '-') right:Multiplication)*
+
+Multiplication =
+  Exponentiation (operator:('*' | '/') right:Exponentiation)*
+
+Exponentiation =
+  Modulo (operator:'^' right:Modulo)*
+
+Modulo =
+  PrimaryExpression (operator:'%' right:PrimaryExpression)*
+
+PrimaryExpression =
+  '(' Expression ')'
+| value:NUMBER
+| func:AbstractDefinition
+  ('(' args:Expression (',' args:Expression)* ')')?
+
+ID =
+  'id'
+
+NUMBER =
+  'number'

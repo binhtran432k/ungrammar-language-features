@@ -1,0 +1,1 @@
+import "ungrammar-languageserver/nodeServerMain";
