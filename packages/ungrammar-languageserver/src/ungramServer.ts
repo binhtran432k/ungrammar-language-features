@@ -7,6 +7,7 @@ import {
 import {
 	type Connection,
 	type Diagnostic,
+	DidChangeConfigurationNotification,
 	type Disposable,
 	type FormattingOptions,
 	type InitializeParams,
@@ -57,10 +58,16 @@ export interface RuntimeEnvironment {
 }
 
 // The settings interface describes the server relevant settings part
-interface RuntimeSettings {
+interface RuntimeChangeSettings {
 	ungrammar?: {
 		validate?: { enable?: boolean };
+		format?: { enable?: boolean };
 	};
+}
+
+interface RuntimeSettings {
+	formatEnabled: boolean;
+	validateEnabled: boolean;
 }
 
 interface RuntimeState {
@@ -69,7 +76,8 @@ interface RuntimeState {
 	languageService: LanguageService;
 	ungramDocumentCache: LanguageModelCache<UngramDocument>;
 	diagnosticsSupport?: DiagnosticsSupport;
-	validateEnabled: boolean;
+	hasConfigurationCapability: boolean;
+	settings: RuntimeSettings;
 	formatterMaxNumberOfEdits: number;
 }
 
@@ -95,13 +103,19 @@ export function startServer(
 			60,
 			languageService.parseUngramDocument,
 		),
-		validateEnabled: true,
+		hasConfigurationCapability: false,
+		settings: {
+			validateEnabled: true,
+			formatEnabled: true,
+		},
 		formatterMaxNumberOfEdits: Number.MAX_VALUE,
 	};
 
 	// After the server has started the client sends an initialize request. The server receives
 	// in the passed params the rootPath of the workspace plus the client capabilities.
 	connection.onInitialize((params: InitializeParams) => {
+		state.hasConfigurationCapability =
+			params.capabilities.workspace?.configuration ?? false;
 		state.formatterMaxNumberOfEdits =
 			params.initializationOptions.customCapabilities?.rangeFormatting
 				?.editLimit || Number.MAX_VALUE;
@@ -151,11 +165,19 @@ export function startServer(
 		return { capabilities };
 	});
 
-	// The settings have changed. It sent on server activation as well.
-	connection.onDidChangeConfiguration((change) => {
-		const settings = <RuntimeSettings>change.settings;
+	connection.onInitialized(() => {
+		if (state.hasConfigurationCapability) {
+			// Register for all configuration changes.
+			connection.client.register(
+				DidChangeConfigurationNotification.type,
+				undefined,
+			);
+		}
+	});
 
-		state.validateEnabled = !!settings.ungrammar?.validate?.enable;
+	// The settings have changed. It sent on server activation as well.
+	connection.onDidChangeConfiguration(async (change) => {
+		await updateDocumentSettings(state, change.settings);
 		updateConfiguration(state);
 	});
 
@@ -489,9 +511,37 @@ async function validateTextDocument(
 	return await state.languageService.doValidation(textDocument, ungramDocument);
 }
 
-function updateConfiguration(state: RuntimeState) {
-	// TODO: configure language service
+async function updateDocumentSettings(
+	state: RuntimeState,
+	settings: RuntimeChangeSettings,
+): Promise<void> {
+	if (state.hasConfigurationCapability) {
+		const workspaceSettings = await (<Promise<RuntimeChangeSettings>>(
+			state.connection.workspace.getConfiguration({})
+		));
+		updateRuntimeSettingsByChangeSettings(state.settings, workspaceSettings);
+	}
+	updateRuntimeSettingsByChangeSettings(state.settings, settings);
+}
 
+function updateRuntimeSettingsByChangeSettings(
+	settings: RuntimeSettings,
+	changeSettings?: RuntimeChangeSettings,
+): void {
+	if (changeSettings?.ungrammar) {
+		if (typeof changeSettings.ungrammar.validate?.enable === "boolean") {
+			settings.validateEnabled = changeSettings.ungrammar.validate.enable;
+		}
+		if (typeof changeSettings.ungrammar.format?.enable === "boolean") {
+			settings.formatEnabled = changeSettings.ungrammar.format.enable;
+		}
+	}
+}
+
+async function updateConfiguration(state: RuntimeState) {
+	state.languageService.configuration({
+		validate: state.settings.validateEnabled,
+	});
 	state.diagnosticsSupport?.requestRefresh();
 }
 
@@ -501,6 +551,9 @@ function onFormat(
 	options: FormattingOptions,
 	range?: Range,
 ): TextEdit[] {
+	if (!state.settings.formatEnabled) {
+		return [];
+	}
 	const document = state.documents.get(textDocument.uri);
 	if (document) {
 		const ungramDocument = getUngramDocument(state, document);

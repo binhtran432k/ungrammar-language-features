@@ -29,6 +29,9 @@ export namespace UngramFormat {
 		_options: FormattingOptions,
 		range: Range,
 	): TextEdit[] {
+		if (ungramDocument.unknowns.length > 0) {
+			return [];
+		}
 		const visitor = new FormatVisitor(document, {
 			from: document.offsetAt(range.start),
 			to: document.offsetAt(range.end),

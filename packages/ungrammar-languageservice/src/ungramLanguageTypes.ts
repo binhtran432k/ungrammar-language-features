@@ -62,6 +62,7 @@ export {
 } from "vscode-languageserver-types";
 
 export interface LanguageService {
+	configuration(settings: LanguageServiceSettings): void;
 	doValidation(
 		document: TextDocument,
 		ungramDocument: UngramDocument,
@@ -136,6 +137,10 @@ export interface LanguageService {
 		ungramDocument: UngramDocument,
 		range?: Range,
 	): SemanticTokens;
+}
+
+export interface LanguageServiceSettings {
+	validate: boolean;
 }
 
 export interface LanguageServiceParams {
