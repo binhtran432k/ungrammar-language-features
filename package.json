@@ -1,17 +1,42 @@
 {
 	"name": "ungrammar-language-features",
-	"description": "Language Features for Ungrammar",
+	"displayName": "%displayName%",
+	"description": "%description%",
 	"private": true,
+	"version": "0.0.2",
+	"publisher": "binhtran432k",
 	"author": "Binh Tran <binhtran432k@gmail.com>",
+	"repository": {
+		"url": "https://github.com/binhtran432k/ungrammar-language-features.git",
+		"type": "git"
+	},
 	"license": "MIT",
-	"type": "module",
+	"keywords": [
+		"ungrammar",
+		"WASM",
+		"Component Model",
+		"LSP",
+		"Language Server"
+	],
+	"categories": ["Formatters", "Programming Languages"],
+	"engines": {
+		"vscode": "^1.91.0"
+	},
+	"icon": "icons/ungram.png",
+	"activationEvents": [],
+	"main": "./dist/node/extension",
+	"browser": "./dist/browser/extension",
+	"workspaces": ["packages/*"],
 	"scripts": {
 		"lint": "biome ci",
 		"fix": "biome check --fix --unsafe",
-		"compile": "bun compile:lezer && bun compile:service && bun compile:server",
+		"start": "bun --cwd packages/ungrammar-vscode start",
+		"compile": "bun compile:lezer && bun compile:service && bun compile:server && bun compile:vscode",
+		"compile:vscode": "bun --cwd packages/ungrammar-vscode compile",
 		"compile:server": "bun --cwd packages/ungrammar-languageserver compile",
 		"compile:service": "bun --cwd packages/ungrammar-languageservice compile",
-		"compile:lezer": "bun --cwd packages/ungrammar-lezer compile"
+		"compile:lezer": "bun --cwd packages/ungrammar-lezer compile",
+		"vscode:prepublish": "bun compile"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.8.3",
@@ -20,5 +45,47 @@
 	"peerDependencies": {
 		"typescript": "^5.0.0"
 	},
-	"workspaces": ["packages/*"]
+	"contributes": {
+		"languages": [
+			{
+				"id": "ungrammar",
+				"extensions": [".ungram"],
+				"aliases": ["Ungrammar", "ungram"],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "ungrammar",
+				"scopeName": "source.ungrammar",
+				"path": "./syntaxes/ungrammar.tmLanguage.json"
+			}
+		],
+		"configuration": {
+			"id": "ungrammar",
+			"title": "Ungrammar",
+			"type": "object",
+			"properties": {
+				"ungrammar.validate.enable": {
+					"type": "boolean",
+					"scope": "window",
+					"default": true,
+					"description": "%ungrammar.validate.enable.desc%"
+				},
+				"ungrammar.format.enable": {
+					"type": "boolean",
+					"scope": "window",
+					"default": true,
+					"description": "%ungrammar.format.enable.desc%"
+				},
+				"ungrammar.trace.server": {
+					"type": "string",
+					"scope": "window",
+					"enum": ["off", "messages", "verbose"],
+					"default": "off",
+					"description": "%ungrammar.tracing.desc%"
+				}
+			}
+		}
+	}
 }

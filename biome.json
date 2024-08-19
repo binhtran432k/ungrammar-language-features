@@ -19,6 +19,8 @@
 		"ignore": [
 			"dist/",
 			"out/",
+			".vscode/",
+			".vscode-test-web/",
 			"lib/cjs",
 			"lib/esm",
 			"parser.js",

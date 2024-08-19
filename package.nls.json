@@ -1,0 +1,7 @@
+{
+	"displayName": "Ungrammar Language Features",
+	"description": "Provides rich language support for Ungrammar files.",
+	"ungrammar.format.enable.desc": "Enable/disable default Ungrammar formatter",
+	"ungrammar.validate.enable.desc": "Enable/disable Ungrammar validation.",
+	"ungrammar.tracing.desc": "Traces the communication between VS Code and the Ungrammar language server."
+}

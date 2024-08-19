@@ -1,0 +1,29 @@
+{
+	"name": "ungrammar-vscode",
+	"description": "Ungrammar VSCode",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"main": "./dist/node/extension",
+	"browser": "./dist/browser/extension",
+	"scripts": {
+		"compile": "node esbuild.js --production",
+		"vscode:prepublish": "npm run compile",
+		"prestart": "npm run compile",
+		"start": "vscode-test-web ../../examples --browserType=none --extensionDevelopmentPath=../..",
+		"pretest": "node esbuild.js --test --production",
+		"test": "vscode-test-web --browserType=none --extensionDevelopmentPath=. --extensionTestsPath=dist/extensionTests.js"
+	},
+	"dependencies": {
+		"ungrammar-languageserver": "0.0.0",
+		"vscode-languageclient": "^9.0.1"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.91.0",
+		"@vscode/test-web": "^0.0.56",
+		"esbuild": "^0.23.0"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	}
+}

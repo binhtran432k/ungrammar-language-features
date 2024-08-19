@@ -1,0 +1,25 @@
+{
+	"name": "Ungrammar",
+	"scopeName": "source.ungrammar",
+	"patterns": [
+		{ "include": "#lineComment" },
+		{ "include": "#tokenLit" },
+		{ "include": "#nodeName" }
+	],
+	"repository": {
+		"lineComment": {
+			"name": "comment.line.ungrammar",
+			"begin": "//",
+			"end": "$"
+		},
+		"tokenLit": {
+			"name": "string.quoted.single.ungrammar",
+			"begin": "'",
+			"end": "'"
+		},
+		"nodeName": {
+			"name": "entity.name.type.node.ungrammar",
+			"match": "\\b[A-Z][A-Za-z0-9_]*\\b"
+		}
+	}
+}
