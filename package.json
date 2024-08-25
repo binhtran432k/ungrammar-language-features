@@ -11,13 +11,7 @@
 		"type": "git"
 	},
 	"license": "MIT",
-	"keywords": [
-		"ungrammar",
-		"WASM",
-		"Component Model",
-		"LSP",
-		"Language Server"
-	],
+	"keywords": ["ungrammar", "Component Model", "LSP", "Language Server"],
 	"categories": ["Formatters", "Programming Languages"],
 	"engines": {
 		"vscode": "^1.91.0"
