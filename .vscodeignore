@@ -4,3 +4,4 @@
 !icons/ungram.png
 !LICENSE
 !dist/
+!syntaxes/*.tmLanguage.json
