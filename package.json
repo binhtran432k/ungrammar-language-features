@@ -28,6 +28,7 @@
 		"compile": "bun compile:lezer && bun compile:service && bun compile:server && bun compile:vscode",
 		"compile:vscode": "bun --cwd packages/ungrammar-vscode compile",
 		"compile:server": "bun --cwd packages/ungrammar-languageserver compile",
+		"compile:monaco": "bun --cwd packages/ungrammar-monaco compile",
 		"compile:service": "bun --cwd packages/ungrammar-languageservice compile",
 		"compile:lezer": "bun --cwd packages/ungrammar-lezer compile",
 		"vscode:prepublish": "bun compile"
@@ -37,7 +38,7 @@
 		"@types/bun": "latest"
 	},
 	"peerDependencies": {
-		"typescript": "^5.0.0"
+		"typescript": "^5.5.4"
 	},
 	"contributes": {
 		"languages": [

@@ -1,0 +1,10 @@
+{
+	"extends": "./tsconfig.base.json",
+	"compilerOptions": {
+		"sourceMap": true,
+		"declaration": true,
+		"stripInternal": true,
+		"module": "es6",
+		"outDir": "../lib/esm"
+	}
+}
