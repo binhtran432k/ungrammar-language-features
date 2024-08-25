@@ -6,7 +6,6 @@ import type {
 	CodeAction,
 	CodeActionContext,
 	CodeLens,
-	Command,
 	CompletionList,
 	Definition,
 	Diagnostic,
@@ -108,7 +107,7 @@ export interface LanguageService {
 		ungramDocument: UngramDocument,
 		range: Range,
 		context: CodeActionContext,
-	): PromiseLike<(Command | CodeAction)[] | null>;
+	): PromiseLike<CodeAction[] | null>;
 	getFoldingRanges(
 		document: TextDocument,
 		ungramDocument: UngramDocument,

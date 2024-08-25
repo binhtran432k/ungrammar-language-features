@@ -2,7 +2,6 @@ import { UngramDocument } from "../ast/ungramDocument.js";
 import type {
 	CodeAction,
 	CodeActionContext,
-	Command,
 	LanguageServiceState,
 	Location,
 	Range,
@@ -16,7 +15,7 @@ export namespace UngramCodeAction {
 		ungramDocument: UngramDocument,
 		range: Range,
 		context: CodeActionContext,
-	): PromiseLike<(Command | CodeAction)[] | null> {
+	): PromiseLike<CodeAction[] | null> {
 		const offset = document.offsetAt(range.start);
 
 		if (!UngramDocument.isInIdentifier(ungramDocument, offset)) {
@@ -34,7 +33,7 @@ function getNodeCodeAction(
 	ungramDocument: UngramDocument,
 	offset: number,
 	_context: CodeActionContext,
-): (Command | CodeAction)[] | null {
+): CodeAction[] | null {
 	const [nodeName] = UngramDocument.getNodeData(
 		UngramDocument.getNodeByOffset(ungramDocument, offset),
 		document,
@@ -74,7 +73,7 @@ function getNodeNameAction(
 	title: string,
 	oldName: string,
 	newName: string,
-): Command | CodeAction | null {
+): CodeAction | null {
 	if (oldName === newName) {
 		return null;
 	}
