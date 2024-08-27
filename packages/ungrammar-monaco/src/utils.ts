@@ -1,4 +1,4 @@
-import * as monaco from "monaco-editor";
+import type * as Monaco from "monaco-editor";
 import {
 	type CodeAction,
 	type CodeActionContext,
@@ -25,7 +25,7 @@ import {
 } from "ungrammar-languageservice";
 
 export namespace LSPUtils {
-	export function toMonacoRange(range: Range): monaco.IRange {
+	export function toMonacoRange(range: Range): Monaco.IRange {
 		return {
 			startColumn: range.start.character + 1,
 			startLineNumber: range.start.line + 1,
@@ -34,7 +34,7 @@ export namespace LSPUtils {
 		};
 	}
 
-	export function toMonacoPosition(pos: Position): monaco.IPosition {
+	export function toMonacoPosition(pos: Position): Monaco.IPosition {
 		return {
 			column: pos.character + 1,
 			lineNumber: pos.line + 1,
@@ -43,8 +43,8 @@ export namespace LSPUtils {
 
 	export function toMonacoCompletion(
 		cmpList: CompletionList,
-		range: monaco.IRange,
-	): monaco.languages.CompletionList {
+		range: Monaco.IRange,
+	): Monaco.languages.CompletionList {
 		return {
 			suggestions: cmpList.items.map((cmp) => ({
 				kind: cmp.kind!,
@@ -57,12 +57,13 @@ export namespace LSPUtils {
 	}
 
 	export function toMonacoDocumentSymbols(
+		monaco: typeof Monaco,
 		symbols: DocumentSymbol[],
-	): monaco.languages.DocumentSymbol[] {
+	): Monaco.languages.DocumentSymbol[] {
 		return symbols.map((sym) => ({
 			detail: sym.name,
 			name: sym.name,
-			kind: toMonacoSymbolKind(sym.kind),
+			kind: toMonacoSymbolKind(monaco, sym.kind),
 			tags: [],
 			range: toMonacoRange(sym.range),
 			selectionRange: toMonacoRange(sym.selectionRange),
@@ -70,8 +71,9 @@ export namespace LSPUtils {
 	}
 
 	export function toMonacoSymbolKind(
+		monaco: typeof Monaco,
 		kind: SymbolKind,
-	): monaco.languages.SymbolKind {
+	): Monaco.languages.SymbolKind {
 		switch (kind) {
 			case SymbolKind.Function:
 				return monaco.languages.SymbolKind.Function;
@@ -82,7 +84,7 @@ export namespace LSPUtils {
 		}
 	}
 
-	export function toMonacoHover(hover: Hover): monaco.languages.Hover {
+	export function toMonacoHover(hover: Hover): Monaco.languages.Hover {
 		const contents = Array.isArray(hover.contents)
 			? hover.contents.map(toMonacoMarkdownString)
 			: [toMonacoMarkdownString(hover.contents)];
@@ -91,11 +93,11 @@ export namespace LSPUtils {
 
 	export function toMonacoMarkdownString(
 		cnt: MarkupContent | MarkedString,
-	): monaco.IMarkdownString {
+	): Monaco.IMarkdownString {
 		return { value: typeof cnt !== "string" ? cnt.value : cnt };
 	}
 
-	export function toMonacoTextEdit(edit: TextEdit): monaco.languages.TextEdit {
+	export function toMonacoTextEdit(edit: TextEdit): Monaco.languages.TextEdit {
 		return {
 			text: edit.newText,
 			range: toMonacoRange(edit.range),
@@ -104,7 +106,7 @@ export namespace LSPUtils {
 
 	export function toMonacoFoldingRange(
 		range: FoldingRange,
-	): monaco.languages.FoldingRange {
+	): Monaco.languages.FoldingRange {
 		return {
 			start: range.startLine + 1,
 			end: range.endLine + 1,
@@ -113,14 +115,14 @@ export namespace LSPUtils {
 
 	export function toMonacoCodeLenses(
 		codeLenses: CodeLens[],
-	): monaco.languages.CodeLens[] {
+	): Monaco.languages.CodeLens[] {
 		return codeLenses.map((codeLens) => ({
 			command: codeLens.command && toMonacoCommand(codeLens.command),
 			range: toMonacoRange(codeLens.range),
 		}));
 	}
 
-	export function toMonacoCommand(command: Command): monaco.languages.Command {
+	export function toMonacoCommand(command: Command): Monaco.languages.Command {
 		return {
 			id: command.command,
 			title: command.title,
@@ -129,8 +131,9 @@ export namespace LSPUtils {
 	}
 
 	export function toMonacoLocation(
+		monaco: typeof Monaco,
 		location: Location,
-	): monaco.languages.Location {
+	): Monaco.languages.Location {
 		return {
 			uri: monaco.Uri.parse(location.uri),
 			range: toMonacoRange(location.range),
@@ -139,8 +142,8 @@ export namespace LSPUtils {
 
 	export function toMonacoSelectionRange(
 		selectionRange: SelectionRange,
-	): monaco.languages.SelectionRange[] {
-		const ranges: monaco.languages.SelectionRange[] = [];
+	): Monaco.languages.SelectionRange[] {
+		const ranges: Monaco.languages.SelectionRange[] = [];
 		let walk: typeof selectionRange | undefined = selectionRange;
 		while (walk) {
 			ranges.push({ range: toMonacoRange(walk.range) });
@@ -150,8 +153,9 @@ export namespace LSPUtils {
 	}
 
 	export function toMonacoDefinition(
+		monaco: typeof Monaco,
 		definition: Definition,
-	): monaco.languages.Definition | monaco.languages.LocationLink[] {
+	): Monaco.languages.Definition | Monaco.languages.LocationLink[] {
 		if (Array.isArray(definition)) {
 			return definition.map((def) => ({
 				uri: monaco.Uri.parse(def.uri),
@@ -166,16 +170,17 @@ export namespace LSPUtils {
 
 	export function toMonacoDecumentHighlights(
 		highlights: DocumentHighlight[],
-	): monaco.languages.DocumentHighlight[] {
+	): Monaco.languages.DocumentHighlight[] {
 		return highlights.map((hl) => ({
 			range: toMonacoRange(hl.range),
 		}));
 	}
 
 	export function toMonacoWorkspaceEdit(
+		monaco: typeof Monaco,
 		workspaceEdit: WorkspaceEdit,
-	): monaco.languages.WorkspaceEdit {
-		const workspaceEdits: monaco.languages.IWorkspaceTextEdit[] = [];
+	): Monaco.languages.WorkspaceEdit {
+		const workspaceEdits: Monaco.languages.IWorkspaceTextEdit[] = [];
 		if (workspaceEdit.changes) {
 			for (const [uri, edits] of Object.entries(workspaceEdit.changes)) {
 				const monacoUri = monaco.Uri.parse(uri);
@@ -192,18 +197,19 @@ export namespace LSPUtils {
 	}
 
 	export function toMonacoCodeAction(
+		monaco: typeof Monaco,
 		codeAction: CodeAction,
-	): monaco.languages.CodeAction {
+	): Monaco.languages.CodeAction {
 		return {
 			title: codeAction.title,
 			command: codeAction.command && toMonacoCommand(codeAction.command),
-			edit: codeAction.edit && toMonacoWorkspaceEdit(codeAction.edit),
+			edit: codeAction.edit && toMonacoWorkspaceEdit(monaco, codeAction.edit),
 		};
 	}
 
 	export function toMonacoSemanticTokens(
 		tokens: SemanticTokens,
-	): monaco.languages.SemanticTokens {
+	): Monaco.languages.SemanticTokens {
 		return {
 			data: new Uint32Array(tokens.data),
 			resultId: tokens.resultId,
@@ -212,7 +218,7 @@ export namespace LSPUtils {
 }
 
 export namespace MonacoUtils {
-	export function toLspRange(range: monaco.IRange): Range {
+	export function toLspRange(range: Monaco.IRange): Range {
 		return {
 			start: {
 				character: range.startColumn - 1,
@@ -225,7 +231,7 @@ export namespace MonacoUtils {
 		};
 	}
 
-	export function toLspPosition(pos: monaco.IPosition): Position {
+	export function toLspPosition(pos: Monaco.IPosition): Position {
 		return {
 			character: pos.column - 1,
 			line: pos.lineNumber - 1,
@@ -233,7 +239,7 @@ export namespace MonacoUtils {
 	}
 
 	export function toLspFormattingOptions(
-		opts: monaco.languages.FormattingOptions,
+		opts: Monaco.languages.FormattingOptions,
 	): FormattingOptions {
 		return {
 			...opts,
@@ -241,13 +247,13 @@ export namespace MonacoUtils {
 	}
 
 	export function toLspDiagnostic(
-		markerData: monaco.editor.IMarkerData,
+		markerData: Monaco.editor.IMarkerData,
 	): Diagnostic {
 		return { message: markerData.message, range: toLspRange(markerData) };
 	}
 
 	export function toLspCodeActionContext(
-		context: monaco.languages.CodeActionContext,
+		context: Monaco.languages.CodeActionContext,
 	): CodeActionContext {
 		return { diagnostics: context.markers.map(toLspDiagnostic) };
 	}
