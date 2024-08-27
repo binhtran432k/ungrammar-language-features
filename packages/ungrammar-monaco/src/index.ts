@@ -26,6 +26,22 @@ export namespace UngrammarMonaco {
 				],
 			},
 		});
+
+		monaco.languages.setLanguageConfiguration(LanguageId, {
+			comments: {
+				lineComment: "//",
+			},
+			brackets: [["(", ")"]],
+			colorizedBracketPairs: [["(", ")"]],
+			surroundingPairs: [
+				{ open: "(", close: ")" },
+				{ open: "'", close: "'" },
+			],
+			autoClosingPairs: [
+				{ open: "(", close: ")" },
+				{ open: "'", close: "'", notIn: ["string"] },
+			],
+		});
 	}
 
 	export function handleEditorDidMount(
