@@ -10,12 +10,14 @@
 		"import": "./lib/esm/index.js",
 		"require": "./lib/cjs/index.js"
 	},
+	"files": ["lib"],
 	"type": "module",
 	"scripts": {
-		"compile": "bun compile:parser && bun compile:cjs && bun compile:esm",
-		"compile:parser": "lezer-generator src/ungrammar.grammar -o src/parser",
-		"compile:cjs": "tsc -p ./src/tsconfig.cjs.json",
-		"compile:esm": "tsc -p ./src"
+		"build": "echo Build Lezer",
+		"build:parser": "lezer-generator src/ungrammar.grammar -o src/parser",
+		"build:cjs": "tsc -p src/tsconfig.cjs.json",
+		"build:esm": "tsc -p src",
+		"test": "bun test"
 	},
 	"dependencies": {
 		"@lezer/highlight": "^1.2.0",

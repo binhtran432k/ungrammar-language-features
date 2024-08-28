@@ -1,0 +1,54 @@
+name: Continuous Delivery
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build_www:
+    name: Build WWW
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout respository
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Cache node modules
+        id: bun-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules/
+          key: ${{ runner.os }}-node-${{ hashFiles('bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-node
+
+      - name: Install bun dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run Build WWW
+        env:
+          BASE_URL: /ungrammar-language-features/
+        run: bun build:www
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./packages/ungrammar-www/dist
+
+  deploy_www:
+    name: Deploy Github Pages
+    runs-on: ubuntu-latest
+    needs: build_www
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

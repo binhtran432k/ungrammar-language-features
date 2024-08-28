@@ -1,0 +1,35 @@
+---
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+import Nav from "@/components/Nav/Nav.astro";
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="Astro description" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body class="flex min-h-screen h-full flex-col overflow-hidden">
+		<Nav />
+		<main class="container m-auto flex flex-grow my-2">
+			<slot />
+		</main>
+		<script>
+			import { loadThemeDark } from "@/utils/darkMode.js";
+			loadThemeDark();
+		</script>
+	</body>
+</html>
+<style is:global>
+	:root {
+		scrollbar-gutter: initial !important;
+	}
+</style>

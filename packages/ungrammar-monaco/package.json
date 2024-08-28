@@ -10,14 +10,15 @@
 		"import": "./lib/esm/index.js",
 		"require": "./lib/cjs/index.js"
 	},
+	"files": ["lib"],
 	"type": "module",
 	"scripts": {
-		"compile": "bun compile:cjs && bun compile:esm",
-		"compile:cjs": "tsc -p ./src/tsconfig.cjs.json",
-		"compile:esm": "tsc -p ./src"
+		"build": "bun build:cjs && bun build:esm",
+		"build:cjs": "tsc -p ./src/tsconfig.cjs.json",
+		"build:esm": "tsc -p ./src"
 	},
 	"dependencies": {
-		"ungrammar-languageservice": "0.0.0"
+		"ungrammar-languageservice": "*"
 	},
 	"devDependencies": {
 		"@types/bun": "latest"
