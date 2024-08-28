@@ -3,7 +3,7 @@
 	"displayName": "%displayName%",
 	"description": "%description%",
 	"private": true,
-	"version": "0.0.2",
+	"version": "0.0.0",
 	"publisher": "binhtran432k",
 	"author": "Binh Tran <binhtran432k@gmail.com>",
 	"repository": {
@@ -23,19 +23,22 @@
 	"workspaces": ["packages/*"],
 	"scripts": {
 		"lint": "biome ci",
+		"nx:ci": "nx affected -t test build",
 		"fix": "biome check --fix --unsafe",
-		"start": "bun --cwd packages/ungrammar-vscode start",
-		"compile": "bun compile:lezer && bun compile:service && bun compile:server && bun compile:vscode",
-		"compile:vscode": "bun --cwd packages/ungrammar-vscode compile",
-		"compile:server": "bun --cwd packages/ungrammar-languageserver compile",
-		"compile:monaco": "bun --cwd packages/ungrammar-monaco compile",
-		"compile:service": "bun --cwd packages/ungrammar-languageservice compile",
-		"compile:lezer": "bun --cwd packages/ungrammar-lezer compile",
-		"vscode:prepublish": "bun compile"
+		"graph": "nx graph",
+		"dev": "bunx --bun nx dev ungrammar-www",
+		"preview": "bunx --bun nx preview ungrammar-www",
+		"preview:vscode": "bunx --bun nx preview ungrammar-vscode",
+		"build": "bunx --bun lerna run build",
+		"build:vscode": "bunx --bun lerna run build --scope ungrammar-vscode",
+		"build:www": "bunx --bun lerna run build --scope ungrammar-www",
+		"test": "bunx --bun lerna run test",
+		"vscode:prepublish": "bun run build"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.8.3",
-		"@types/bun": "latest"
+		"@types/bun": "latest",
+		"lerna": "^8.1.8"
 	},
 	"peerDependencies": {
 		"typescript": "^5.5.4"

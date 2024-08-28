@@ -10,16 +10,18 @@
 		"import": "./lib/esm/ungramLanguageService.js",
 		"require": "./lib/cjs/ungramLanguageService.js"
 	},
+	"files": ["lib"],
 	"type": "module",
 	"scripts": {
 		"codegen": "bun scripts/codegen.ts",
-		"compile": "bun compile:cjs && bun compile:esm",
-		"compile:cjs": "tsc -p ./src/tsconfig.cjs.json",
-		"compile:esm": "tsc -p ./src"
+		"build": "echo Build Language Service",
+		"build:cjs": "tsc -p ./src/tsconfig.cjs.json",
+		"build:esm": "tsc -p ./src",
+		"test": "bun test"
 	},
 	"dependencies": {
 		"@lezer/common": "^1.2.1",
-		"ungrammar-lezer": "0.0.0",
+		"ungrammar-lezer": "*",
 		"vscode-languageserver-textdocument": "^1.0.11",
 		"vscode-languageserver-types": "^3.17.5"
 	},

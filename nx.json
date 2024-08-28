@@ -1,0 +1,66 @@
+{
+	"$schema": "https://raw.githubusercontent.com/nrwl/nx/master/packages/nx/schemas/nx-schema.json",
+	"namedInputs": {
+		"src": [
+			"{projectRoot}/src/**/*",
+			"!{projectRoot}/**/test/**/*",
+			"!{projectRoot}/**/*.test.*"
+		],
+		"test": ["{projectRoot}/**/test/**/*", "{projectRoot}/**/*.test.*"],
+		"share-public": [
+			"{workspaceRoot}/icons/ungram.svg",
+			"{workspaceRoot}/examples/**/*"
+		]
+	},
+	"targetDefaults": {
+		"build": {
+			"cache": true,
+			"inputs": ["src", { "env": "BASE_URL" }],
+			"dependsOn": [
+				"^build",
+				"build:parser",
+				"build:cjs",
+				"build:esm",
+				"build:share-public"
+			],
+			"outputs": ["{projectRoot}/out", "{projectRoot}/dist"]
+		},
+		"build:share-public": {
+			"cache": true,
+			"inputs": ["share-public"],
+			"outputs": [
+				"{projectRoot}/public/favicon.svg",
+				"{projectRoot}/public/examples"
+			]
+		},
+		"build:cjs": {
+			"cache": true,
+			"dependsOn": ["^build"],
+			"inputs": ["src"],
+			"outputs": ["{projectRoot}/lib/cjs"]
+		},
+		"build:esm": {
+			"cache": true,
+			"dependsOn": ["^build"],
+			"inputs": ["src"],
+			"outputs": ["{projectRoot}/lib/esm"]
+		},
+		"build:parser": {
+			"cache": true,
+			"inputs": ["src"],
+			"outputs": [
+				"{projectRoot}/src/parser.js",
+				"{projectRoot}/src/parser.terms.js"
+			]
+		},
+		"test": {
+			"cache": true,
+			"inputs": ["test"],
+			"dependsOn": ["^test", "build"]
+		},
+		"dev": {},
+		"preview": {
+			"dependsOn": ["build"]
+		}
+	}
+}

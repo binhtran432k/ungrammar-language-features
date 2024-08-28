@@ -1,4 +1,4 @@
-name: Build & Test
+name: Continuous Integration
 on:
   pull_request:
   push:
@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout respository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v1
@@ -30,10 +32,12 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Run biome lint check
-        run: bun lint
+        run: bun --bun lint
 
-      - name: Compile all
-        run: bun compile
+      - name: Derive appropriate SHAs for base and head for `nx affected` commands
+        uses: nrwl/nx-set-shas@v4
 
-      - name: Run test
-        run: bun test
+      - name: Run NX to build and test
+        env:
+          BASE_URL: /ungrammar-language-features/
+        run: bun --bun nx:ci

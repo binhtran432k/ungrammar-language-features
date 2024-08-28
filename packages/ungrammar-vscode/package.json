@@ -7,15 +7,12 @@
 	"main": "./dist/node/extension",
 	"browser": "./dist/browser/extension",
 	"scripts": {
-		"compile": "node esbuild.js --production",
-		"vscode:prepublish": "npm run compile",
-		"prestart": "npm run compile",
-		"start": "vscode-test-web ../../examples --browserType=none --extensionDevelopmentPath=../..",
-		"pretest": "node esbuild.js --test --production",
-		"test": "vscode-test-web --browserType=none --extensionDevelopmentPath=. --extensionTestsPath=dist/extensionTests.js"
+		"build": "node esbuild.js --production",
+		"preview": "vscode-test-web ../../examples --browserType=none --extensionDevelopmentPath=../..",
+		"tmp-test": "vscode-test-web --browserType=none --extensionDevelopmentPath=. --extensionTestsPath=dist/extensionTests.js"
 	},
 	"dependencies": {
-		"ungrammar-languageserver": "0.0.0",
+		"ungrammar-languageserver": "*",
 		"vscode-languageclient": "^9.0.1"
 	},
 	"devDependencies": {

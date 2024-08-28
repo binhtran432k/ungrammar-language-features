@@ -13,12 +13,13 @@
 		"./nodeServerMain": "./out/node/ungramServerMain.js"
 	},
 	"bin": "./bin/ungrammar-languageserver.js",
+	"files": ["out", "bin"],
 	"type": "module",
 	"scripts": {
-		"compile": "tsc"
+		"build": "tsc"
 	},
 	"dependencies": {
-		"ungrammar-languageservice": "0.0.0",
+		"ungrammar-languageservice": "*",
 		"vscode-languageserver": "^9.0.1",
 		"vscode-languageserver-textdocument": "^1.0.11"
 	},

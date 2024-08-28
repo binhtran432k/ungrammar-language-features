@@ -178,3 +178,11 @@ dist
 .vscode-test/
 .vscode-test-web/
 *.vsix
+
+# WWW
+packages/ungrammar-www/public/favicon.svg
+packages/ungrammar-www/public/examples/
+
+# NX
+.nx/cache
+.nx/workspace-data

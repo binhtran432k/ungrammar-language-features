@@ -1,0 +1,11 @@
+---
+import Card from "@/components/Card";
+import Editor from "@/components/Editor";
+import Layout from "@/layouts/Layout.astro";
+---
+
+<Layout title="Ungrammar Language Features">
+  <Card title="Code">
+    <Editor client:only="preact" />
+  </Card>
+</Layout>
