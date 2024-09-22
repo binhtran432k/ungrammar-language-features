@@ -10,9 +10,7 @@
 		"import": "./lib/esm/index.js",
 		"require": "./lib/cjs/index.js"
 	},
-	"files": [
-		"lib"
-	],
+	"files": ["lib"],
 	"type": "module",
 	"scripts": {
 		"build": "echo Build Lezer",

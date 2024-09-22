@@ -13,10 +13,7 @@
 		"./nodeServerMain": "./out/node/ungramServerMain.js"
 	},
 	"bin": "./bin/ungrammar-languageserver.js",
-	"files": [
-		"out",
-		"bin"
-	],
+	"files": ["out", "bin"],
 	"type": "module",
 	"scripts": {
 		"build": "tsc"

@@ -10,9 +10,7 @@
 		"import": "./lib/esm/ungramLanguageService.js",
 		"require": "./lib/cjs/ungramLanguageService.js"
 	},
-	"files": [
-		"lib"
-	],
+	"files": ["lib"],
 	"type": "module",
 	"scripts": {
 		"codegen": "bun scripts/codegen.ts",
