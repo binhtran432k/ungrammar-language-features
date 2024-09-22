@@ -1,0 +1,42 @@
+name: Release
+on:
+  workflow_dispatch:
+
+jobs:
+  build_and_deploy:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout respository
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Cache node modules
+        id: bun-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules/
+          key: ${{ runner.os }}-node-${{ hashFiles('bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-node
+
+      - name: Install bun dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run Build WWW
+        env:
+          BASE_URL: /ungrammar-language-features/
+        run: bun build:vscode
+
+      - name: Publish VSCode
+        env:
+          VSCODE_TOKEN: ${{ secrets.VSCODE_TOKEN }}
+        run: bun publish:vscode
+
+      - name: Publish NPM
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: bun publish:npm
