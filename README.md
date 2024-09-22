@@ -1,5 +1,11 @@
 # Language Features for Ungrammar files
 
+[![VSCode Version](https://img.shields.io/visual-studio-marketplace/v/binhtran432k.ungrammar-language-features)](https://marketplace.visualstudio.com/items?itemName=binhtran432k.ungrammar-language-features)
+[![VSCode Installs](https://img.shields.io/visual-studio-marketplace/i/binhtran432k.ungrammar-language-features)](https://marketplace.visualstudio.com/items?itemName=binhtran432k.ungrammar-language-features)
+[![VSCode Downloads](https://img.shields.io/visual-studio-marketplace/d/binhtran432k.ungrammar-language-features)](https://marketplace.visualstudio.com/items?itemName=binhtran432k.ungrammar-language-features)
+[![VSCode Stars](https://img.shields.io/visual-studio-marketplace/stars/binhtran432k.ungrammar-language-features)](https://marketplace.visualstudio.com/items?itemName=binhtran432k.ungrammar-language-features)
+[![CI Status](https://github.com/binhtran432k/ungrammar-language-features/actions/workflows/ci.yml/badge.svg)](https://github.com/binhtran432k/ungrammar-language-features/actions)
+
 [Ungrammar](https://github.com/rust-analyzer/ungrammar) is a novel data format
 for defining concrete syntax trees. This project aims to integrate Ungrammar
 language support into VS Code, providing features to streamline the creation
