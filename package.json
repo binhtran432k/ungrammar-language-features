@@ -34,8 +34,8 @@
 		"build:www": "bunx --bun lerna run build --scope ungrammar-www",
 		"test": "bunx --bun lerna run test",
 		"version": "bunx --bun lerna version --no-push",
-		"publish:npm": "bunx --bun lerna publish from-git --no-private --yes",
-		"publish:vscode": "vsce publish --no-dependencies",
+		"publish:npm": "bunx --bun lerna publish from-package --no-private --yes",
+		"publish:vscode": "vsce publish --no-dependencies --skip-duplicate",
 		"vscode:prepublish": "bun build:vscode"
 	},
 	"devDependencies": {
