@@ -1,7 +1,7 @@
 {
 	"name": "ungrammar-lezer",
 	"description": "lezer-based Ungrammar grammar",
-	"version": "0.0.0",
+	"version": "0.0.3",
 	"author": "Binh Tran <binhtran432k@gmail.com>",
 	"license": "MIT",
 	"main": "lib/esm/index.js",
@@ -10,7 +10,9 @@
 		"import": "./lib/esm/index.js",
 		"require": "./lib/cjs/index.js"
 	},
-	"files": ["lib"],
+	"files": [
+		"lib"
+	],
 	"type": "module",
 	"scripts": {
 		"build": "echo Build Lezer",
@@ -24,8 +26,8 @@
 		"@lezer/lr": "^1.4.1"
 	},
 	"devDependencies": {
-		"@types/bun": "latest",
-		"@lezer/generator": "^1.7.1"
+		"@lezer/generator": "^1.7.1",
+		"@types/bun": "latest"
 	},
 	"peerDependencies": {
 		"typescript": "^5.0.0"

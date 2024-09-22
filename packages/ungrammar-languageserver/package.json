@@ -1,7 +1,7 @@
 {
 	"name": "ungrammar-languageserver",
 	"description": "Language server for Ungrammar",
-	"version": "0.0.0",
+	"version": "0.0.3",
 	"author": "Binh Tran <binhtran432k@gmail.com>",
 	"license": "MIT",
 	"engines": {
@@ -13,13 +13,16 @@
 		"./nodeServerMain": "./out/node/ungramServerMain.js"
 	},
 	"bin": "./bin/ungrammar-languageserver.js",
-	"files": ["out", "bin"],
+	"files": [
+		"out",
+		"bin"
+	],
 	"type": "module",
 	"scripts": {
 		"build": "tsc"
 	},
 	"dependencies": {
-		"ungrammar-languageservice": "*",
+		"ungrammar-languageservice": "^0.0.3",
 		"vscode-languageserver": "^9.0.1",
 		"vscode-languageserver-textdocument": "^1.0.11"
 	},
