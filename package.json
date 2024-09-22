@@ -3,7 +3,7 @@
 	"displayName": "%displayName%",
 	"description": "%description%",
 	"private": true,
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"publisher": "binhtran432k",
 	"author": "Binh Tran <binhtran432k@gmail.com>",
 	"repository": {
@@ -33,7 +33,8 @@
 		"build:vscode": "bunx --bun lerna run build --scope ungrammar-vscode",
 		"build:www": "bunx --bun lerna run build --scope ungrammar-www",
 		"test": "bunx --bun lerna run test",
-		"publish:npm": "bunx --bun lerna publish from-package --no-private --yes",
+		"version": "bunx --bun lerna version --no-push",
+		"publish:npm": "bunx --bun lerna publish from-git --no-private --yes",
 		"publish:vscode": "vsce publish --no-dependencies",
 		"vscode:prepublish": "bun build:vscode"
 	},
