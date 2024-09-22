@@ -7,6 +7,10 @@
 	"engines": {
 		"node": "*"
 	},
+	"repository": {
+		"url": "https://github.com/binhtran432k/ungrammar-language-features.git",
+		"type": "git"
+	},
 	"main": "./out/node/ungramServerMain.js",
 	"exports": {
 		"./browserServerMain": "./out/browser/ungramServerMain.js",

@@ -36,6 +36,11 @@ jobs:
           VSCE_PAT: ${{ secrets.VSCODE_TOKEN }}
         run: bun publish:vscode
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          registry-url: 'https://registry.npmjs.org'
+
       - name: Publish NPM
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

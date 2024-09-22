@@ -6,6 +6,10 @@
 	"license": "MIT",
 	"main": "lib/esm/index.js",
 	"types": "lib/esm/index",
+	"repository": {
+		"url": "https://github.com/binhtran432k/ungrammar-language-features.git",
+		"type": "git"
+	},
 	"exports": {
 		"import": "./lib/esm/index.js",
 		"require": "./lib/cjs/index.js"

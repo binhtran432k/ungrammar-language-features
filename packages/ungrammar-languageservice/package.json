@@ -6,6 +6,10 @@
 	"license": "MIT",
 	"main": "./lib/esm/ungramLanguageService.js",
 	"types": "./lib/esm/ungramLanguageService",
+	"repository": {
+		"url": "https://github.com/binhtran432k/ungrammar-language-features.git",
+		"type": "git"
+	},
 	"exports": {
 		"import": "./lib/esm/ungramLanguageService.js",
 		"require": "./lib/cjs/ungramLanguageService.js"
