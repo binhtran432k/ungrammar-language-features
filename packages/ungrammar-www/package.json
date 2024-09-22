@@ -3,7 +3,7 @@
 	"description": "Website for Ungrammar Demonstration",
 	"private": true,
 	"type": "module",
-	"version": "0.0.0",
+	"version": "0.0.4",
 	"scripts": {
 		"dev": "astro dev",
 		"start": "astro dev",
@@ -24,6 +24,6 @@
 		"preact": "^10.23.2",
 		"tailwindcss": "^3.4.10",
 		"typescript": "^5.5.4",
-		"ungrammar-monaco": "*"
+		"ungrammar-monaco": "^0.0.4"
 	}
 }

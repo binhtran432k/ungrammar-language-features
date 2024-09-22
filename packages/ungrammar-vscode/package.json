@@ -2,7 +2,7 @@
 	"name": "ungrammar-vscode",
 	"description": "Ungrammar VSCode",
 	"private": true,
-	"version": "0.0.0",
+	"version": "0.0.4",
 	"type": "module",
 	"main": "./dist/node/extension",
 	"browser": "./dist/browser/extension",
@@ -12,7 +12,7 @@
 		"tmp-test": "vscode-test-web --browserType=none --extensionDevelopmentPath=. --extensionTestsPath=dist/extensionTests.js"
 	},
 	"dependencies": {
-		"ungrammar-languageserver": "*",
+		"ungrammar-languageserver": "^0.0.4",
 		"vscode-languageclient": "^9.0.1"
 	},
 	"devDependencies": {

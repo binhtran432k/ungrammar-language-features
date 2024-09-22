@@ -1,7 +1,7 @@
 {
 	"name": "ungrammar-lezer",
 	"description": "lezer-based Ungrammar grammar",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"author": "Binh Tran <binhtran432k@gmail.com>",
 	"license": "MIT",
 	"main": "lib/esm/index.js",
