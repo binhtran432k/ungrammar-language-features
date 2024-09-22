@@ -6,6 +6,8 @@ jobs:
   build_and_deploy:
     name: Build and Release
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - name: Checkout respository
         uses: actions/checkout@v4
@@ -26,17 +28,16 @@ jobs:
       - name: Install bun dependencies
         run: bun install --frozen-lockfile
 
-      - name: Run Build WWW
-        env:
-          BASE_URL: /ungrammar-language-features/
+      - name: Run Build VSCode and Dependencies
         run: bun build:vscode
 
       - name: Publish VSCode
         env:
-          VSCODE_TOKEN: ${{ secrets.VSCODE_TOKEN }}
+          VSCE_PAT: ${{ secrets.VSCODE_TOKEN }}
         run: bun publish:vscode
 
       - name: Publish NPM
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
         run: bun publish:npm

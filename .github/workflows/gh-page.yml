@@ -1,4 +1,4 @@
-name: Release Githu Pages
+name: Release Github Pages
 on:
   push:
     branches: [main]
