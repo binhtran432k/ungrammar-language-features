@@ -33,11 +33,14 @@
 		"build:vscode": "bunx --bun lerna run build --scope ungrammar-vscode",
 		"build:www": "bunx --bun lerna run build --scope ungrammar-www",
 		"test": "bunx --bun lerna run test",
-		"vscode:prepublish": "bun run build"
+		"publish:npm": "bunx --bun lerna publish from-package --no-private",
+		"publish:vscode": "vsce publish --no-dependencies",
+		"vscode:prepublish": "bun build:vscode"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.8.3",
 		"@types/bun": "latest",
+		"@vscode/vsce": "^3.1.0",
 		"lerna": "^8.1.8"
 	},
 	"peerDependencies": {

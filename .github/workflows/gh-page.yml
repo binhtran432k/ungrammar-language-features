@@ -1,4 +1,4 @@
-name: Continuous Delivery
+name: Release Githu Pages
 on:
   push:
     branches: [main]
@@ -38,7 +38,7 @@ jobs:
         with:
           path: ./packages/ungrammar-www/dist
 
-  deploy_www:
+  deploy_github_pages:
     name: Deploy Github Pages
     runs-on: ubuntu-latest
     needs: build_www
