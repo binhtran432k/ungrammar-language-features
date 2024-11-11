@@ -3,7 +3,7 @@
 	"displayName": "%displayName%",
 	"description": "%description%",
 	"private": true,
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"publisher": "binhtran432k",
 	"author": "Binh Tran <binhtran432k@gmail.com>",
 	"repository": {
