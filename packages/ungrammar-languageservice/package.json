@@ -1,7 +1,7 @@
 {
 	"name": "ungrammar-languageservice",
 	"description": "Language service for Ungrammar",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"author": "Binh Tran <binhtran432k@gmail.com>",
 	"license": "MIT",
 	"main": "./lib/esm/ungramLanguageService.js",
@@ -25,7 +25,7 @@
 	},
 	"dependencies": {
 		"@lezer/common": "^1.2.1",
-		"ungrammar-lezer": "^0.0.4",
+		"ungrammar-lezer": "^0.0.5",
 		"vscode-languageserver-textdocument": "^1.0.11",
 		"vscode-languageserver-types": "^3.17.5"
 	},
