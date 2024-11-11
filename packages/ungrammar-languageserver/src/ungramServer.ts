@@ -77,6 +77,7 @@ interface RuntimeState {
 	ungramDocumentCache: LanguageModelCache<UngramDocument>;
 	diagnosticsSupport?: DiagnosticsSupport;
 	hasConfigurationCapability: boolean;
+	hasDynamicRegistrationCapability: boolean;
 	settings: RuntimeSettings;
 	formatterMaxNumberOfEdits: number;
 }
@@ -104,6 +105,7 @@ export function startServer(
 			languageService.parseUngramDocument,
 		),
 		hasConfigurationCapability: false,
+		hasDynamicRegistrationCapability: false,
 		settings: {
 			validateEnabled: true,
 			formatEnabled: true,
@@ -115,9 +117,12 @@ export function startServer(
 	// in the passed params the rootPath of the workspace plus the client capabilities.
 	connection.onInitialize((params: InitializeParams) => {
 		state.hasConfigurationCapability =
-			params.capabilities.workspace?.configuration ?? false;
+			!!params.capabilities.workspace?.configuration;
+		state.hasDynamicRegistrationCapability =
+			!!params.capabilities.workspace?.didChangeConfiguration
+				?.dynamicRegistration;
 		state.formatterMaxNumberOfEdits =
-			params.initializationOptions.customCapabilities?.rangeFormatting
+			params.initializationOptions?.customCapabilities?.rangeFormatting
 				?.editLimit || Number.MAX_VALUE;
 
 		const supportsDiagnosticPull =
@@ -166,7 +171,10 @@ export function startServer(
 	});
 
 	connection.onInitialized(() => {
-		if (state.hasConfigurationCapability) {
+		if (
+			state.hasConfigurationCapability &&
+			state.hasDynamicRegistrationCapability
+		) {
 			// Register for all configuration changes.
 			connection.client.register(
 				DidChangeConfigurationNotification.type,
