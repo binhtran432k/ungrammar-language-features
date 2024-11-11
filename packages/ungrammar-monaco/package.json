@@ -1,7 +1,7 @@
 {
 	"name": "ungrammar-monaco",
 	"description": "Monaco Language Support for Ungrammar",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"author": "Binh Tran <binhtran432k@gmail.com>",
 	"license": "MIT",
 	"main": "lib/esm/index.js",
@@ -22,7 +22,7 @@
 		"build:esm": "tsc -p ./src"
 	},
 	"dependencies": {
-		"ungrammar-languageservice": "^0.0.4"
+		"ungrammar-languageservice": "^0.0.5"
 	},
 	"devDependencies": {
 		"@types/bun": "latest"
