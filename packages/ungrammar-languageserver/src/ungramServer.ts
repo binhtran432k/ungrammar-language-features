@@ -117,7 +117,7 @@ export function startServer(
 		state.hasConfigurationCapability =
 			params.capabilities.workspace?.configuration ?? false;
 		state.formatterMaxNumberOfEdits =
-			params.initializationOptions.customCapabilities?.rangeFormatting
+			params.initializationOptions?.customCapabilities?.rangeFormatting
 				?.editLimit || Number.MAX_VALUE;
 
 		const supportsDiagnosticPull =
